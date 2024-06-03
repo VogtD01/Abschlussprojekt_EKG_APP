@@ -1,6 +1,8 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from seiten import seite1, seite2, seite3
+from seite1 import seite1
+from seite2 import seite2
+from seite3 import seite3   
 
 # Funktion zum Einfügen benutzerdefinierter CSS
 def set_bg_hack():
