@@ -10,3 +10,5 @@
     - Windows: `.venv\Scripts\Activate`
     - Linux: `source .venv/bin/activate`
 - Installieren Sie die erfoderlichen Pakete mittels "pip install -r requirements.txt".
+
+streamlit run mainpage.py
