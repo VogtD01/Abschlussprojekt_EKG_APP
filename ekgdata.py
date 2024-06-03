@@ -62,17 +62,27 @@ class EKGdata:
         time_between_peaks = (time_between_peaks_in_ms / 1000) / 60
         
         # calculate the heart rate
-        heart_rate = 1 / time_between_peaks
+        heart_rate_array = 1 / time_between_peaks
+        
+        # mean heart rate
+        mean_heart_rate = np.mean(heart_rate_array)
 
-        # plot the heart rate (optional)
+        return heart_rate_array, mean_heart_rate
+    
+    def plot_heartrate(self, heart_rate):
+        '''A function that plots the heart rate from the EKG data.'''
+
+        peaks = self.find_peaks()
+
+        #smooth the heart rate 
+        heart_rate = signal.savgol_filter(heart_rate, 100, 2)
+        
+        # plot the heart rate
         time_ms = self.df['Time in ms'][peaks[1:]]
         time_m = time_ms / 1000 / 60
         fig = px.line(x = time_m, y = heart_rate, title='Heart Rate', labels={'x':'Time in m', 'y':'Heart Rate in bpm'})
         
-        # mean heart rate
-        mean_heart_rate = np.mean(heart_rate)
-
-        return heart_rate, fig, mean_heart_rate
+        return fig
 
     def plot_time_series(self):
         '''A function that plots the EKG data as a time series.'''
@@ -116,7 +126,9 @@ class EKGdata:
 if __name__ == "__main__":
     print("This is a module with some functions to read the EKG data")
     
-    ekg_dict = EKGdata.load_by_id(1)
-    print(ekg_dict)
-    
+    ekg_dict = EKGdata.load_by_id(1, 1)
+    ekg = EKGdata(ekg_dict)
+    heartrate_array, meanhr = ekg.estimate_heartrate()
+    fig = ekg.plot_heartrate(heartrate_array)   
+    fig.show()
     
