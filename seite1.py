@@ -10,8 +10,10 @@ import person
 # Funktion für Seite 1
 
 def seite1():
-    st.title("Mainpage")
-    st.write("Willkommen auf Seite 1!")
+    
+    # Farbe des Textes ändern
+    st.markdown("<h1 style='color:White;'>Willkommen auf Seite 1</h1>", unsafe_allow_html=True)
+
     # Füge hier deinen Inhalt für Seite 1 hinzu
     st.image("Bilder/test.jpg", caption="Beispielbild", width=800)
 
