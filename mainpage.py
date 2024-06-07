@@ -1,9 +1,9 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
+import streamlit_functions as sf
 from seite1 import seite1
 from seite2 import seite2
 from seite3 import seite3   
-import streamlit_functions as sf
 
 # Anwenden des benutzerdefinierten CSS
 sf.set_bg_hack()

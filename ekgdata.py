@@ -79,12 +79,12 @@ class EKGdata:
         
         # plot the heart rate
         time_ms = self.df['Time in ms'][peaks[1:]]
-        time_m = time_ms / 1000 / 60
-        fig = px.line(x = time_m, y = heart_rate, title='Heart Rate', labels={'x':'Time in m', 'y':'Heart Rate in bpm'})
+        time_s = time_ms / 1000 
+        fig = px.line(x = time_s, y = heart_rate, title='Heart Rate', labels={'x':'Time in s', 'y':'Heart Rate in bpm'})
         
         return fig
 
-    def plot_time_series(self):
+    def plot_time_series(self, start, end, peaks = False):
         '''A function that plots the EKG data as a time series.'''
 
         # create a  empty figure
@@ -92,32 +92,39 @@ class EKGdata:
         
         # add the EKG data
         mV = self.df['EKG in mV']
-        time = self.df['Time in ms'] / 1000 / 60
+        time = self.df['Time in ms'] / 1000
+        # cut the data
+        mV = mV[start:end]
+        time = time[start:end]  
+
+
+
         fig.add_trace(go.Scatter(
             x=time,
             y=mV,
             mode='lines',
             name='EKG Data'
         ))
-
-        '''# add the peaks (optional)
-        peaks = ekg.find_peaks()
-        fig.add_trace(go.Scatter(
-            x=[time[j] for j in peaks],
-            y=[mV[j] for j in peaks],
-            mode='markers',
-            marker=dict(
-                size=8,
-                color='red',
-                symbol='cross'
-            ),
-             name='Peaks'
-            ))'''
+        
+        if peaks == True:
+            # add the peaks (optional)
+            peaks = self.find_peaks()
+            fig.add_trace(go.Scatter(
+                x=[time[j] for j in peaks],
+                y=[mV[j] for j in peaks],
+                mode='markers',
+                marker=dict(
+                    size=8,
+                    color='red',
+                    symbol='cross'
+                ),
+                name='T-Peaks'
+                ))
         
         # add the layout
         fig.update_layout(
             title='EKG Data',
-            xaxis_title='Time in m',
+            xaxis_title='Time in s',
             yaxis_title='EKG in mV'
         )
         return fig
@@ -128,6 +135,7 @@ if __name__ == "__main__":
     
     ekg_dict = EKGdata.load_by_id(1, 1)
     ekg = EKGdata(ekg_dict)
+    plt = ekg.plot_time_series(0, 15)
     heartrate_array, meanhr = ekg.estimate_heartrate()
     fig = ekg.plot_heartrate(heartrate_array)   
     fig.show()

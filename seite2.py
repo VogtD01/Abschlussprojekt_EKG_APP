@@ -83,8 +83,19 @@ def seite2():
     st.write("Datum: ", current_ekg_data["date"])
 
     # EKG-Daten als Matplotlib Plot anzeigen
-    fig = current_ekg_data_class.plot_time_series()
+    
+    # add number input for start and end of the plot 
+    start = st.number_input("Start des Plots", 0, len(current_ekg_data_class.df), 0)
+    end = st.number_input("Ende des Plots", 0, len(current_ekg_data_class.df), len(current_ekg_data_class.df))
+    
 
+    # add peaks botton 
+    peaks = False
+    if st.toggle("T-Peaks anzeigen", False):
+        peaks = True
+
+    # EKG-Daten als Matplotlib Plot anzeigen
+    fig = current_ekg_data_class.plot_time_series(start, end, peaks)
     st.plotly_chart(fig)
 
     # Herzrate bestimmen
