@@ -14,17 +14,8 @@ def seite2():
     # Lade alle Personen
     person_names = read_person_data.get_person_list(read_person_data.load_person_data())
 
-<<<<<<< HEAD
     # Anlegen diverser Session States
     ## Gewählte Versuchsperson
-=======
-    st.markdown("<h1 style='color:#ADD8E6;'>Benutzer auswählen</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color:blue;'>Bitte benutzer auswählen!</p>", unsafe_allow_html=True)
-    
-
-
-    ## Anlegen des Session State. Aktuelle Versuchsperson, wenn es keine gibt
->>>>>>> 4421f8e4a0af0f8024038eb7a2c03bb0b8e4e373
     if 'aktuelle_versuchsperson' not in st.session_state:
         st.session_state.aktuelle_versuchsperson = 'None'
 
