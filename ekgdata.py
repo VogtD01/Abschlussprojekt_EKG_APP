@@ -75,7 +75,7 @@ class EKGdata:
         peaks = self.find_peaks()
 
         #smooth the heart rate 
-        heart_rate = signal.savgol_filter(heart_rate, 100, 2)
+        heart_rate = signal.savgol_filter(heart_rate, 100, 2)   
         
         # plot the heart rate
         time_ms = self.df['Time in ms'][peaks[1:]]
