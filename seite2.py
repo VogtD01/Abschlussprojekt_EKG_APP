@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import person
 from PIL import Image
 
-
+##################
 
 def seite2():
     # Zu Beginn
