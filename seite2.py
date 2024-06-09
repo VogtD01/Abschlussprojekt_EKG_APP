@@ -5,7 +5,7 @@ import ekgdata
 import matplotlib.pyplot as plt
 import person
 from PIL import Image
-
+import numpy as np
 
 
 def seite2():
@@ -86,7 +86,7 @@ def seite2():
     
     # add number input for start and end of the plot 
     start = st.number_input("Start des Plots", 0, len(current_ekg_data_class.df), 0)
-    end = st.number_input("Ende des Plots", 0, len(current_ekg_data_class.df), len(current_ekg_data_class.df))
+    end = st.number_input("Ende des Plots", 0, len(current_ekg_data_class.df), 1000)
     
 
     # add peaks botton 

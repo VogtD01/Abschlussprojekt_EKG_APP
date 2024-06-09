@@ -41,13 +41,12 @@ class EKGdata:
         self.data = ekg_dict["result_link"]
         self.df = pd.read_csv(self.data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
 
-    def find_peaks(self):
+    def find_peaks(self, start = None, end = None):
         '''A function that finds the peaks in the EKG data and returns the peaks as an array.'''
         
-        peaks, _ = signal.find_peaks(self.df['EKG in mV'], height=340) 
+        peaks, _ = signal.find_peaks(self.df['EKG in mV'][start:end], height=340) 
         return peaks
-        
-
+    
     def estimate_heartrate(self):
         '''A function that estimates the heart rate from the EKG data and returns the heart rate as an array.'''
         peaks = self.find_peaks()
@@ -93,11 +92,10 @@ class EKGdata:
         # add the EKG data
         mV = self.df['EKG in mV']
         time = self.df['Time in ms'] / 1000
+
         # cut the data
         mV = mV[start:end]
         time = time[start:end]  
-
-
 
         fig.add_trace(go.Scatter(
             x=time,
@@ -108,7 +106,7 @@ class EKGdata:
         
         if peaks == True:
             # add the peaks (optional)
-            peaks = self.find_peaks()
+            peaks = self.find_peaks(start, end)
             fig.add_trace(go.Scatter(
                 x=[time[j] for j in peaks],
                 y=[mV[j] for j in peaks],
@@ -135,8 +133,10 @@ if __name__ == "__main__":
     
     ekg_dict = EKGdata.load_by_id(1, 1)
     ekg = EKGdata(ekg_dict)
+    	
+    time_s = ekg.df['Time in ms'] / 1000
     plt = ekg.plot_time_series(0, 15)
     heartrate_array, meanhr = ekg.estimate_heartrate()
     fig = ekg.plot_heartrate(heartrate_array)   
-    fig.show()
+    
     
