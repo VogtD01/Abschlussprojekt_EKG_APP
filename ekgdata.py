@@ -66,7 +66,13 @@ class EKGdata:
         # mean heart rate
         mean_heart_rate = np.mean(heart_rate_array)
 
-        return heart_rate_array, mean_heart_rate
+        #max heart rate
+        max_heart_rate = np.max(heart_rate_array)
+
+        #min heart rate
+        min_heart_rate = np.min(heart_rate_array)  
+
+        return heart_rate_array, mean_heart_rate, max_heart_rate, min_heart_rate
     
     def plot_heartrate(self, heart_rate):
         '''A function that plots the heart rate from the EKG data.'''
@@ -78,9 +84,32 @@ class EKGdata:
         
         # plot the heart rate
         time_ms = self.df['Time in ms'][peaks[1:]]
-        time_s = time_ms / 1000 
-        fig = px.line(x = time_s, y = heart_rate, title='Heart Rate', labels={'x':'Time in s', 'y':'Heart Rate in bpm'})
+        time_s = time_ms / 1000
+
+        # create a figure
+        fig = go.Figure()
+
+        # add the heart rate to the figure
+        fig.add_trace(go.Scatter(
+            x = time_s, 
+            y = heart_rate, 
+            mode='lines', 
+            name='Heart Rate'))
         
+        # add the mean heart rate
+        fig.add_trace(go.Scatter(
+            x = time_s, 
+            y = np.mean(heart_rate) * np.ones(len(heart_rate)), # plot the mean heart rate
+            mode='lines',
+            line=dict(dash='dash'), 
+            name='Mean Heart Rate'))
+        
+        # add the layout
+        fig.update_layout(
+            title='Heart Rate',
+            xaxis_title='Time in s',
+            yaxis_title='Heart Rate in bpm'
+        )
         return fig
 
     def plot_time_series(self, start, end, peaks = False):
@@ -137,6 +166,7 @@ if __name__ == "__main__":
     time_s = ekg.df['Time in ms'] / 1000
     plt = ekg.plot_time_series(0, 15)
     heartrate_array, meanhr = ekg.estimate_heartrate()
-    fig = ekg.plot_heartrate(heartrate_array)   
+    plt2 = ekg.plot_heartrate(heartrate_array) 
+    plt2.show()  
     
     

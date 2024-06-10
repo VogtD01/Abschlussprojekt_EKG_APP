@@ -102,7 +102,7 @@ def seite2():
 
        
         # Berechnung der maximalen Zeit in Sekunden
-        max_time_seconds = len(current_ekg_data_class.df) / 1000
+        max_time_seconds = (len(current_ekg_data_class.df) / 1000)
 
         # Fügen Sie eine Nummerneingabe für Start und Ende des Plots hinzu (in Sekunden)
         start_seconds = st.number_input("Start des Plots (in Sekunden)", 0.0, max_time_seconds, 0.0)
@@ -112,19 +112,33 @@ def seite2():
         start = int(start_seconds * 1000)
         end = int(end_seconds * 1000)
 
+    heartrate_array, mean_heartrate, max_heartrate, min_heartrate = current_ekg_data_class.estimate_heartrate()
 
+    #create new columns
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # add length of plot_time_series
+        st.write("Länge der Akrivität: ", end_seconds, " Sekunden")
+        # add mean heart rate
+        st.write("durchschnittliche Herzfrequenz: ", int(mean_heartrate), "bpm")
+
+    with col2:
+        # add min and max heart rate
+        st.write("maximale Herzfrequenz: ", int(max_heartrate), "bpm")
+        st.write("minimale Herzfrequenz: ", int(min_heartrate), "bpm")
 
     # Fügen Sie einen Schalter für Peaks hinzu
     peaks = False
     if st.checkbox("T-Peaks anzeigen", False):
         peaks = True
 
-    # EKG-Daten als Matplotlib Plot anzeigen
+    # EKG-Daten als Plot anzeigen
     fig = current_ekg_data_class.plot_time_series(start, end, peaks)
     st.plotly_chart(fig)
 
     # Herzrate bestimmen
-    heartrate_array, mean_heartrate = current_ekg_data_class.estimate_heartrate()
+    
     fig2 = current_ekg_data_class.plot_heartrate(heartrate_array)
-    st.write("durchschnittliche Herzfrequenz: ", int(mean_heartrate))
+    
     st.plotly_chart(fig2)
