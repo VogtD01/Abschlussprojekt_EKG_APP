@@ -84,26 +84,27 @@ def seite2():
         ekg_list.append(ekg["date"])
         date_id_mapping[ekg["date"]] = ekg["id"]
 
-    # Auswahlbox für EKG-Daten
-    st.session_state.ekg_test_date = st.selectbox(
-        'EKG-Test Datum',
-        options=ekg_list)
+    # Erstellen Sie eine Spaltenanordnung
+    col1, col2 = st.columns(2)
 
-    # EKG-Daten anzeigen
-    selected_date = st.session_state.ekg_test_date
-    selected_ekg_id = date_id_mapping[selected_date]
+    with col1:
+        # Auswahlbox für EKG-Daten
+        st.session_state.ekg_test_date = st.selectbox(
+            'EKG-Test Datum',
+            options=ekg_list)
 
-    current_ekg_data = ekgdata.EKGdata.load_by_id(person_dict["id"], selected_ekg_id)
-    current_ekg_data_class = ekgdata.EKGdata(current_ekg_data)
+    with col2:
+        selected_date = st.session_state.ekg_test_date
+        selected_ekg_id = date_id_mapping[selected_date]
 
-    st.write("## EKG-Daten")
-    st.write("Datum: ", current_ekg_data["date"])
+        current_ekg_data = ekgdata.EKGdata.load_by_id(person_dict["id"], selected_ekg_id)
+        current_ekg_data_class = ekgdata.EKGdata(current_ekg_data)
 
-    # EKG-Daten als Matplotlib Plot anzeigen
+        # Fügen Sie eine Nummerneingabe für Start und Ende des Plots hinzu
+        start = st.number_input("Start des Plots", 0, len(current_ekg_data_class.df), 0)
+        end = st.number_input("Ende des Plots", 0, len(current_ekg_data_class.df), 1000)
 
-    # Fügen Sie eine Nummerneingabe für Start und Ende des Plots hinzu
-    start = st.number_input("Start des Plots", 0, len(current_ekg_data_class.df), 0)
-    end = st.number_input("Ende des Plots", 0, len(current_ekg_data_class.df), 1000)
+
 
     # Fügen Sie einen Schalter für Peaks hinzu
     peaks = False
