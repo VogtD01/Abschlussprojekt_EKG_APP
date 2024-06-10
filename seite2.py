@@ -72,37 +72,42 @@ def seite2():
             
 
 
-    #Öffne EKG-Daten
+    # Öffne EKG-Daten
     ekgdata_dict = ekgdata.EKGdata.load_by_id(person_dict["id"])
 
     st.write("## EKG-Daten auswählen")
-    # TODO: Für eine Person gibt es ggf. mehrere EKG-Daten. Diese müssen über den Pfad ausgewählt werden können
+    # Für eine Person gibt es ggf. mehrere EKG-Daten. Diese müssen über den Pfad ausgewählt werden können
     ekg_list = []
+    date_id_mapping = {}
+
     for ekg in ekgdata_dict:
-        ekg_list.append(ekg["id"])
+        ekg_list.append(ekg["date"])
+        date_id_mapping[ekg["date"]] = ekg["id"]
 
     # Auswahlbox für EKG-Daten
-    st.session_state.ekg_test = st.selectbox(
-        'EKG-Test',
-        options = ekg_list)
+    st.session_state.ekg_test_date = st.selectbox(
+        'EKG-Test Datum',
+        options=ekg_list)
 
     # EKG-Daten anzeigen
-    current_ekg_data = ekgdata.EKGdata.load_by_id(person_dict["id"], st.session_state.ekg_test)
+    selected_date = st.session_state.ekg_test_date
+    selected_ekg_id = date_id_mapping[selected_date]
+
+    current_ekg_data = ekgdata.EKGdata.load_by_id(person_dict["id"], selected_ekg_id)
     current_ekg_data_class = ekgdata.EKGdata(current_ekg_data)
 
     st.write("## EKG-Daten")
     st.write("Datum: ", current_ekg_data["date"])
 
     # EKG-Daten als Matplotlib Plot anzeigen
-    
-    # add number input for start and end of the plot 
+
+    # Fügen Sie eine Nummerneingabe für Start und Ende des Plots hinzu
     start = st.number_input("Start des Plots", 0, len(current_ekg_data_class.df), 0)
     end = st.number_input("Ende des Plots", 0, len(current_ekg_data_class.df), 1000)
-    
 
-    # add peaks botton 
+    # Fügen Sie einen Schalter für Peaks hinzu
     peaks = False
-    if st.toggle("T-Peaks anzeigen", False):
+    if st.checkbox("T-Peaks anzeigen", False):
         peaks = True
 
     # EKG-Daten als Matplotlib Plot anzeigen
@@ -114,4 +119,3 @@ def seite2():
     fig2 = current_ekg_data_class.plot_heartrate(heartrate_array)
     st.write("durchschnittliche Herzfrequenz: ", int(mean_heartrate))
     st.plotly_chart(fig2)
-
