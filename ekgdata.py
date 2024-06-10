@@ -83,7 +83,7 @@ class EKGdata:
         heart_rate = signal.savgol_filter(heart_rate, 100, 2)
         
         # plot the heart rate
-        time_ms = self.df['Time in ms'][peaks[1:]]
+        time_ms = self.df['Time in ms']
         time_s = time_ms / 1000
 
         # create a figure
