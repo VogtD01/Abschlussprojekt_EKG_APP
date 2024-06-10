@@ -40,6 +40,8 @@ class EKGdata:
         self.date = ekg_dict["date"]
         self.data = ekg_dict["result_link"]
         self.df = pd.read_csv(self.data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
+        # Die Zeitspalte neu starten von 0 bis zum Ende der Daten
+        self.df['New Time in ms'] = self.df['Time in ms'] - self.df['Time in ms'].iloc[0]
 
     def find_peaks(self, start = None, end = None):
         '''A function that finds the peaks in the EKG data and returns the peaks as an array.'''
@@ -54,7 +56,7 @@ class EKGdata:
         # calculate the time between the peaks
         time_between_peaks_in_ms = np.arange(0, len(peaks)-1, 1, dtype='int64')
         for i in range(len(peaks)-1):
-            time_between_peaks_in_ms[i] = (self.df['Time in ms'][peaks[i+1]] - self.df['Time in ms'][peaks[i]])
+            time_between_peaks_in_ms[i] = (self.df['New Time in ms'][peaks[i+1]] - self.df['New Time in ms'][peaks[i]])
             
         # convert the time between the peaks to minutes
         time_between_peaks_in_ms = np.array(time_between_peaks_in_ms)
@@ -83,7 +85,7 @@ class EKGdata:
         heart_rate = signal.savgol_filter(heart_rate, 100, 2)
         
         # plot the heart rate
-        time_ms = self.df['Time in ms'][peaks]
+        time_ms = self.df['New Time in ms'][peaks]
         time_s = time_ms / 1000
 
         # create a figure
@@ -120,7 +122,7 @@ class EKGdata:
         
         # add the EKG data
         mV = self.df['EKG in mV']
-        time = self.df['Time in ms'] / 1000
+        time = self.df['New Time in ms'] / 1000
 
         # cut the data
         mV = mV[start:end]
@@ -163,7 +165,7 @@ if __name__ == "__main__":
     ekg_dict = EKGdata.load_by_id(1, 1)
     ekg = EKGdata(ekg_dict)
     	
-    time_s = ekg.df['Time in ms'] / 1000
+    time_s = ekg.df['New Time in ms'] / 1000
     plt = ekg.plot_time_series(0, 15)
     heartrate_array, meanhr = ekg.estimate_heartrate()
     plt2 = ekg.plot_heartrate(heartrate_array) 
