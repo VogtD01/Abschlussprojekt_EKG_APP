@@ -8,6 +8,11 @@ from seite3 import seite3
 # Anwenden des benutzerdefinierten CSS
 sf.set_bg_hack()
 
+"""# Initialisiere den Zustand des ausgewählten Menüs
+if 'selected' not in st.session_state:
+    st.session_state.selected = "Home""""
+
+
 # Sidebar-Menü erstellen
 with st.sidebar:
     selected = option_menu(
@@ -17,15 +22,17 @@ with st.sidebar:
         menu_icon="cast",  # Icon für das Menü
         default_index=0,  # Standardmäßig ausgewählte Option
     )
+    """if selected != st.session_state.selected:
+        st.session_state.selected = selected
+
+"""
 
 # Hauptinhalt der App
 # Logik zum Anzeigen der ausgewählten Seite
-if selected == "Home":
+if st.session_state.selected == "Home":
     seite1()
-elif selected == "Seite 2":
-    
+elif st.session_state.selected == "Seite 2":
     seite2()
-elif selected == "Seite 3":
-    
+elif st.session_state.selected == "Seite 3":
     seite3()
     
