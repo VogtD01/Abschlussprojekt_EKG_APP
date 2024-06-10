@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import person
 from PIL import Image
 import numpy as np
-import myfunctions as mf
+import streamlit_functions as sf
 
 
 def seite2():
@@ -16,7 +16,7 @@ def seite2():
     person_names = read_person_data.get_person_list(read_person_data.load_person_data())
 
     # Initialisiere Session State, Versuchperson, Bild, EKG-Test
-    mf.initialize_session_state()
+    sf.initialize_session_state()
 
     # Schreibe die Überschrift
     st.write("# EKG APP")

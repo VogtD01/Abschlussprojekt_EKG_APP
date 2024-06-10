@@ -12,3 +12,10 @@
 - Installieren Sie die erfoderlichen Pakete mittels "pip install -r requirements.txt".
 
 streamlit run mainpage.py
+
+evtl import logging
+
+
+Anzeigen des Testdatums und der gesamtem Länge der Zeitreihe in Sekunden (4pkt)
+Nutzer:in kann sinnvollen Zeitbereich für Plots auswählen (2pkt) -> evtl in minuten
+Deployment auf Heroku oder Streamlit Sharing (2pkt)
