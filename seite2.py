@@ -121,15 +121,28 @@ def seite2():
     col1, col2 = st.columns(2)
 
     with col1:
-        # add length of plot_time_series
-        st.write("Länge der Akrivität: ", max_time_seconds, " Sekunden")
-        # add mean heart rate
-        st.write("durchschnittliche Herzfrequenz: ", int(mean_heartrate), "bpm")
+        #header for the first column in white
+        st.markdown("<h3 style='color: white;'>EKG-Daten für die gesamte Aktivität</h3>", unsafe_allow_html=True)
+        # length of the activity
+        st.write("Länge der Aktivität: ", max_time_seconds, " Sekunden")
+        # mean heart rate
+        st.write("Durchschnittliche Herzfrequenz: ", int(mean_heartrate), "bpm")
+        # max heart rate
+        st.write("Maximale Herzfrequenz: ", int(max_heartrate), "bpm")
+        st.write("Minimale Herzfrequenz: ", int(min_heartrate), "bpm")
 
     with col2:
-        # add min and max heart rate
-        st.write("maximale Herzfrequenz: ", int(max_heartrate), "bpm")
-        st.write("minimale Herzfrequenz: ", int(min_heartrate), "bpm")
+        # get the heart rate for the selected time
+        mean_heart_rate_1, heart_rate_array_1, max_heart_rate1, min_heart_rate1 = current_ekg_data_class.calc_heartrate_for_time(start, end)
+        # header for the second column in white
+        st.markdown("<h3 style='color: white;'>EKG-Daten für die eingegebene Zeit</h3>", unsafe_allow_html=True)
+        st.write(".")
+        # mean heart rate for the selected time
+        st.write("Durchschnittliche Herzfrequenz: ", int(mean_heart_rate_1), "bpm")
+        # max heart rate for the selected time
+        st.write("Maximale Herzfrequenz: ", int(max_heart_rate1), "bpm")
+        # min heart rate for the selected time
+        st.write("Minimale Herzfrequenz: ", int(min_heart_rate1), "bpm")
 
     # Fügen Sie einen Schalter für Peaks hinzu
     peaks = False

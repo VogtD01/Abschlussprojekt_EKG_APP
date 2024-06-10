@@ -79,6 +79,34 @@ class EKGdata:
 
         return heart_rate_array, mean_heart_rate, max_heart_rate, min_heart_rate
     
+    def calc_heartrate_for_time(self, start, end):
+        '''A function that calculates the heart rate for a given time range.'''
+        peaks = self.find_peaks(start, end)
+        
+        # calculate the time between the peaks
+        time_between_peaks_in_ms = np.arange(0, len(peaks)-1, 1, dtype='int64')
+        for i in range(len(peaks)-1):
+            time_between_peaks_in_ms[i] = (self.df['New Time in ms'][peaks[i+1]] - self.df['New Time in ms'][peaks[i]])
+            
+        # convert the time between the peaks to minutes
+        time_between_peaks_in_ms = np.array(time_between_peaks_in_ms)
+        time_between_peaks = (time_between_peaks_in_ms / 1000) / 60
+        
+        # calculate the heart rate
+        heart_rate_array = 1 / time_between_peaks
+        
+        # mean heart rate
+        mean_heart_rate = np.mean(heart_rate_array)
+
+        #max heart rate
+        max_heart_rate = np.max(heart_rate_array)
+
+        #min heart rate
+        min_heart_rate = np.min(heart_rate_array)
+
+        return mean_heart_rate, heart_rate_array, max_heart_rate, min_heart_rate
+
+
     def plot_heartrate(self, heart_rate):
         '''A function that plots the heart rate from the EKG data.'''
 
