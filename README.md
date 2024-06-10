@@ -14,6 +14,7 @@
 streamlit run mainpage.py
 
 evtl import logging
+internetseite: learnimggitbranching
 
 
 Anzeigen des Testdatums und der gesamtem Länge der Zeitreihe in Sekunden (4pkt)
