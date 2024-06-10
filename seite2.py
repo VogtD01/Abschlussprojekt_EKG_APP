@@ -100,9 +100,17 @@ def seite2():
         current_ekg_data = ekgdata.EKGdata.load_by_id(person_dict["id"], selected_ekg_id)
         current_ekg_data_class = ekgdata.EKGdata(current_ekg_data)
 
-        # Fügen Sie eine Nummerneingabe für Start und Ende des Plots hinzu
-        start = st.number_input("Start des Plots", 0, len(current_ekg_data_class.df), 0)
-        end = st.number_input("Ende des Plots", 0, len(current_ekg_data_class.df), 1000)
+       
+        # Berechnung der maximalen Zeit in Sekunden
+        max_time_seconds = len(current_ekg_data_class.df) / 1000
+
+        # Fügen Sie eine Nummerneingabe für Start und Ende des Plots hinzu (in Sekunden)
+        start_seconds = st.number_input("Start des Plots (in Sekunden)", 0.0, max_time_seconds, 0.0)
+        end_seconds = st.number_input("Ende des Plots (in Sekunden)", 0.0, max_time_seconds, max_time_seconds)
+
+        # Umrechnung der Eingabewerte in Millisekunden
+        start = int(start_seconds * 1000)
+        end = int(end_seconds * 1000)
 
 
 
