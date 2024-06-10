@@ -42,6 +42,9 @@ class EKGdata:
         self.df = pd.read_csv(self.data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
         # Die Zeitspalte neu starten von 0 bis zum Ende der Daten
         self.df['New Time in ms'] = self.df['Time in ms'] - self.df['Time in ms'].iloc[0]
+        # Die Abtastfrequenz berechnen
+        self.sample_rate = 1 / (self.df['New Time in ms'].iloc[1] - self.df['New Time in ms'].iloc[0])
+
 
     def find_peaks(self, start = None, end = None):
         '''A function that finds the peaks in the EKG data and returns the peaks as an array.'''
@@ -167,8 +170,10 @@ if __name__ == "__main__":
     	
     time_s = ekg.df['New Time in ms'] / 1000
     plt = ekg.plot_time_series(0, 15)
-    heartrate_array, meanhr = ekg.estimate_heartrate()
+    heartrate_array, a, b, d = ekg.estimate_heartrate()
     plt2 = ekg.plot_heartrate(heartrate_array) 
-    plt2.show()  
+    #plt2.show() 
+    print(ekg.sample_rate)
+    
     
     

@@ -99,19 +99,22 @@ def seite2():
 
         current_ekg_data = ekgdata.EKGdata.load_by_id(person_dict["id"], selected_ekg_id)
         current_ekg_data_class = ekgdata.EKGdata(current_ekg_data)
+        current_sample_rate = current_ekg_data_class.sample_rate    # Abtastfrequenz des aktuellen EKGs
 
        
         # Berechnung der maximalen Zeit in Sekunden
-        max_time_seconds = current_ekg_data_class.df['Time in ms'].iloc[-1] / 1000
+        max_time_seconds = current_ekg_data_class.df['New Time in ms'].iloc[-1] / 1000
 
-        # Fügen Sie eine Nummerneingabe für Start und Ende des Plots hinzu (in Sekunden)
-        start_seconds = st.number_input("Start des Plots (in Sekunden)", 0.0, max_time_seconds, 0.0)
-        end_seconds = st.number_input("Ende des Plots (in Sekunden)", 0.0, max_time_seconds, max_time_seconds)
 
-        # Umrechnung der Eingabewerte in Millisekunden
-        start = int(start_seconds * 1000)
-        end = int(end_seconds * 1000)
+        # Bestimmung der Start- und Endzeit des Plots
+        start, end = sf.get_plot_time_range(max_time_seconds, current_sample_rate, 0, 10) 
+        """
+        Hier kann die Funktion get_plot_time_range aus streamlit_functions.py verwendet werden, um die Start- und Endzeit des Plots zu bestimmen.
+        Mit der dritten und vierten Zahl in der Funktion können die Standardwerte für die Start- und Endzeit des Plots festgelegt werden."""
 
+
+
+    # Berechnen Sie die Peaks und die Herzfrequenz als schätzende Werte
     heartrate_array, mean_heartrate, max_heartrate, min_heartrate = current_ekg_data_class.estimate_heartrate()
 
     #create new columns

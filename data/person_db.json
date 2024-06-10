@@ -34,4 +34,15 @@
 		"date": "11.3.2023",
 		"result_link": "data/ekg_data/03_Ruhe.txt"
 	}]
+}, {
+	"id": 4,
+	"date_of_birth": 1990,
+	"firstname": "Max",
+	"lastname": "Mustermann",
+    "picture_path" : "data/pictures/none.jpg",
+	"ekg_tests": [{
+		"id": 5,
+		"date": "12.4.2023",
+		"result_link": "data/ekg_data/05_Belastung.txt"
+	}]
 }]
