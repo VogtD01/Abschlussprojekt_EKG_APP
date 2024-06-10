@@ -102,7 +102,7 @@ def seite2():
 
        
         # Berechnung der maximalen Zeit in Sekunden
-        max_time_seconds = (len(current_ekg_data_class.df) / 1000)
+        max_time_seconds = current_ekg_data_class.df['Time in ms'].iloc[-1] / 1000
 
         # Fügen Sie eine Nummerneingabe für Start und Ende des Plots hinzu (in Sekunden)
         start_seconds = st.number_input("Start des Plots (in Sekunden)", 0.0, max_time_seconds, 0.0)
@@ -119,7 +119,7 @@ def seite2():
 
     with col1:
         # add length of plot_time_series
-        st.write("Länge der Akrivität: ", end_seconds, " Sekunden")
+        st.write("Länge der Akrivität: ", max_time_seconds, " Sekunden")
         # add mean heart rate
         st.write("durchschnittliche Herzfrequenz: ", int(mean_heartrate), "bpm")
 
