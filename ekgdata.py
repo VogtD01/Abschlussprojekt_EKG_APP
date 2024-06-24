@@ -52,6 +52,9 @@ class EKGdata:
         peaks, _ = signal.find_peaks(self.df['EKG in mV'][start:end], height=340) 
         return peaks
     
+
+
+
     def estimate_heartrate(self):
         '''A function that estimates the heart rate from the EKG data and returns the heart rate as an array.'''
         peaks = self.find_peaks()
@@ -189,6 +192,27 @@ class EKGdata:
         )
         return fig
 
+    def plot_heartratevariability(self):
+        '''A function that plots the heart rate variability.'''
+
+        peaks = self.find_peaks()
+        
+        # calculate the time between the peaks
+        time_between_peaks_in_ms = np.arange(0, len(peaks)-1, 1, dtype='int64')
+        for i in range(len(peaks)-1):
+            time_between_peaks_in_ms[i] = (self.df['New Time in ms'][peaks[i+1]] - self.df['New Time in ms'][peaks[i]])
+        
+        #create the figure
+        fig = go.Figure()
+
+        fig.add_trace(go.Scatter(
+            x = np.arange(0, len(time_between_peaks_in_ms), 1),
+            y = time_between_peaks_in_ms,
+            mode='lines',
+            name='Heart Rate Variability'
+            ))
+
+        return fig
 
 if __name__ == "__main__":
     print("This is a module with some functions to read the EKG data")
@@ -199,9 +223,8 @@ if __name__ == "__main__":
     time_s = ekg.df['New Time in ms'] / 1000
     plt = ekg.plot_time_series(0, 15)
     heartrate_array, a, b, d = ekg.estimate_heartrate()
-    plt2 = ekg.plot_heartrate(heartrate_array) 
-    #plt2.show() 
-    print(ekg.sample_rate)
+    plt2 = ekg.plot_heartratevariability()
+    plt2.show()
     
     
     
