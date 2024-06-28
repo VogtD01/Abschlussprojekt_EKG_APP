@@ -155,6 +155,6 @@ def seite2():
 
     # Herzrate bestimmen
     
-    fig2 = current_ekg_data_class.plot_heartrate(heartrate_array)
+    fig2 = current_ekg_data_class.plot_heartrate(heartrate_array, Person_class.calc_max_heart_rate())
     
     st.plotly_chart(fig2)

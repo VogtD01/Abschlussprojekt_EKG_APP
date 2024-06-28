@@ -18,7 +18,7 @@ with st.sidebar:
     selected = option_menu(
         menu_title="Navigation",  # Erster Menü-Titel
         options=["Home", "Seite 2", "Seite 3"],  # Menü-Optionen
-        icons=["house", "gear", "book"],  # Icons für die Menü-Optionen
+        icons=["house", "book", "gear"],  # Icons für die Menü-Optionen
         menu_icon="cast",  # Icon für das Menü
         default_index=0,  # Standardmäßig ausgewählte Option
     )

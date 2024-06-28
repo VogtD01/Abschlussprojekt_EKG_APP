@@ -38,13 +38,10 @@ def seite3():
                 st.write("Kein Bild verfügbar")
     
     
-    person_dict = read_person_data.find_person_data_by_name(st.session_state.aktuelle_versuchsperson)
-    Person_class = person.Person(person_dict)
-    
     # Vorname der Person ändern
     st.subheader("Voramen ändern")
     st.write("Aktueller Vorname: ", person_dict['firstname'] )
-    new_firstname = st.text_input("Neuer Name", value=person_dict['firstname'])
+    new_firstname = st.text_input("Neuer Name")
     if st.button("Vorname ändern"):
         person_dict['firstname'] = new_firstname
         read_person_data.update_person_data(person_dict)
@@ -53,7 +50,7 @@ def seite3():
     # Nachname der Person ändern
     st.subheader("Nachnamen ändern")
     st.write("Aktueller Nachname: ", person_dict['lastname'] )
-    new_lastname = st.text_input("Neuer Nachname", value=person_dict['lastname'])
+    new_lastname = st.text_input("Neuer Nachname")
     if st.button("Nachname ändern"):
         person_dict['lastname'] = new_lastname
         read_person_data.update_person_data(person_dict)
@@ -73,9 +70,13 @@ def seite3():
     st.subheader("Geburtsdatum ändern")
     st.write("Aktuelles Geburtsdatum: ", person_dict['date_of_birth'] )
     st.write("Geben Sie nur das Geburstjahr an, z.B. 1990")
-    new_date_of_birth = st.text_input("Neues Geburtsdatum", value=person_dict['date_of_birth'])
+    new_date_of_birth = st.text_input("Neues Geburtsdatum")
     if st.button("Geburtsdatum ändern"):
         person_dict['date_of_birth'] = int(new_date_of_birth)
         read_person_data.update_person_data(person_dict)
         st.write("Geburtsdatum wurde geändert")
+
+    # Bild der Person ändern
+    st.subheader("Bild ändern")
+
 
