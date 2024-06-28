@@ -178,9 +178,13 @@ class EKGdata:
         if peaks == True:
             # add the peaks 
             peaks = self.find_peaks(start, end)
+
+            # Ensure all peak indices are within the valid range
+            valid_peaks = [j for j in peaks if j < len(time)]
+
             fig.add_trace(go.Scatter(
-                x=[time[j] for j in peaks],
-                y=[mV[j] for j in peaks],
+                x=[time[j] for j in valid_peaks],
+                y=[mV[j] for j in valid_peaks],
                 mode='markers',
                 marker=dict(
                     size=8,

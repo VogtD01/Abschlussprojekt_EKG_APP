@@ -49,10 +49,13 @@ def find_person_data_by_name(suchstring):
         return {}
 
 
+def update_person_data(person_dict):
+    """Eine Funktion, die ein Dictionary einer Person entgegennimmt und die Daten in der Datenbank aktualisiert"""
+    person_data = load_person_data()
+    for i, eintrag in enumerate(person_data):
+        if eintrag["id"] == person_dict["id"]:
+            person_data[i] = person_dict
+            break
 
-# %% Test
-#current_person = find_person_data_by_name("Statham, Jason")
-#current_person
-#current_picture_path = current_person["picture_path"]
-#current_picture_path
-# %%
+    with open("data/person_db.json", "w") as file:
+        json.dump(person_data, file, indent=4)
