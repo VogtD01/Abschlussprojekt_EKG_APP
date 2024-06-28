@@ -47,12 +47,24 @@ class EKGdata:
 
 
     def find_peaks(self, start = None, end = None):
-        '''A function that finds the peaks in the EKG data and returns the peaks as an array.'''
+        '''A function that finds the peaks in the EKG data and returns the R-peaks as an array.'''
         
         peaks, _ = signal.find_peaks(self.df['EKG in mV'][start:end], height=340) 
         return peaks
     
+    def find_t_peaks(self):
+        '''A function that finds the T-Peaks in the EKG data and returns the T-peaks as a list.'''
 
+        r_peaks = self.find_peaks()
+        all_peaks = signal.find_peaks(self.df['EKG in mV'], height=0.5)
+
+        t_peaks = []
+        for peak in all_peaks:
+            for r_peak in r_peaks:
+                if peak == r_peak:
+                    
+
+        return t_peaks
 
 
     def estimate_heartrate(self):
@@ -139,7 +151,7 @@ class EKGdata:
             mode='lines',
             line=dict(dash='dash'), 
             name='Mean Heart Rate'))
-        
+    
         # add the layout
         fig.update_layout(
             title='Heart Rate',
@@ -170,7 +182,7 @@ class EKGdata:
         ))
         
         if peaks == True:
-            # add the peaks (optional)
+            # add the peaks 
             peaks = self.find_peaks(start, end)
             fig.add_trace(go.Scatter(
                 x=[time[j] for j in peaks],
@@ -181,8 +193,21 @@ class EKGdata:
                     color='red',
                     symbol='cross'
                 ),
-                name='T-Peaks'
+                name='R-Peaks'
                 ))
+        
+        t_peaks = self.find_t_peaks()
+        fig.add_trace(go.Scatter(
+            x=[time[j] for j in t_peaks],
+            y=[mV[j] for j in t_peaks],
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='green',
+                symbol='cross'
+            ),
+            name='T-Peaks'
+            ))
         
         # add the layout
         fig.update_layout(
@@ -192,7 +217,7 @@ class EKGdata:
         )
         return fig
 
-    def plot_heartratevariability(self):
+    def plot_heartratevariability(self): # nicht fertig
         '''A function that plots the heart rate variability.'''
 
         peaks = self.find_peaks()
@@ -213,6 +238,11 @@ class EKGdata:
             ))
 
         return fig
+    
+    def RT_interval(self):
+        '''A function that calculates the RT interval.'''
+        r_peaks = self.find_peaks()
+
 
 if __name__ == "__main__":
     print("This is a module with some functions to read the EKG data")
@@ -221,10 +251,9 @@ if __name__ == "__main__":
     ekg = EKGdata(ekg_dict)
     	
     time_s = ekg.df['New Time in ms'] / 1000
-    plt = ekg.plot_time_series(0, 15)
-    heartrate_array, a, b, d = ekg.estimate_heartrate()
-    plt2 = ekg.plot_heartratevariability()
-    plt2.show()
+    plt = ekg.plot_time_series()
+    
+    plt.show()
     
     
     

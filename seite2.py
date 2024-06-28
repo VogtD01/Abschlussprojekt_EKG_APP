@@ -146,7 +146,7 @@ def seite2():
 
     # Fügen Sie einen Schalter für Peaks hinzu
     peaks = False
-    if st.checkbox("T-Peaks anzeigen", False):
+    if st.checkbox("R-Peaks anzeigen", False):
         peaks = True
 
     # EKG-Daten als Plot anzeigen
