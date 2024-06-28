@@ -220,11 +220,31 @@ class EKGdata:
 
         return fig
     
-    def RT_interval(self):# Problem: habe mehr T-Peaks als R-Peaks
+    def RT_interval(self): # fehlerhaft; Ausgabe ist zum teil negativ
         '''A function that calculates the RT interval.'''
         r_peaks = self.find_peaks()
         t_peaks = self.find_t_peaks()
+        
+        # check if the first peak is a T-peak
+        if r_peaks[0] > t_peaks[0]:
+            t_peaks = t_peaks[1:]
+        
+        # check if the last peak is a T-peak
+        if r_peaks[-1] > t_peaks[-1]:
+            r_peaks = r_peaks[:-1]
 
+        # check if the length of the peaks is the same
+        if len(r_peaks) > len(t_peaks):
+            r_peaks = r_peaks[:len(t_peaks)]
+
+        elif len(t_peaks) > len(r_peaks):
+            t_peaks = t_peaks[:len(r_peaks)]
+
+        RT_interval = np.zeros(len(r_peaks))
+        for i in range(len(r_peaks)):
+            RT_interval[i] = self.df['New Time in ms'][t_peaks[i]] - self.df['New Time in ms'][r_peaks[i]]
+
+        return RT_interval
 
 
 if __name__ == "__main__":
@@ -234,11 +254,16 @@ if __name__ == "__main__":
     ekg = EKGdata(ekg_dict)
     	
     time_s = ekg.df['New Time in ms'] / 1000
-    plt = ekg.heartratevariability()
+    #plt = ekg.heartratevariability()
     p_peaks = ekg.find_peaks()
     t_peaks = ekg.find_t_peaks()
-    print(np.shape(p_peaks))
-    print(np.shape(t_peaks))
+    
+    RT_interval = ekg.RT_interval()
+    print(RT_interval)  
+    #plt = px.line(x = len(RT_interval), y = RT_interval)
+    #plt.show()
+
+    
 
     
     
