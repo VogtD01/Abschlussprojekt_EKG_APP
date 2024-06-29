@@ -53,10 +53,10 @@ class EKGdata:
 
         return peaks
     
-    def find_t_peaks(self):
+    def find_t_peaks(self, start = None, end = None):
         '''A function that finds the T-Peaks in the EKG data and returns the T-peaks as a list.'''
 
-        t_peaks, _ = signal.find_peaks(self.df['EKG in mV'], height=[320, 340], distance=100, prominence=20)
+        t_peaks, _ = signal.find_peaks(self.df['EKG in mV'][start:end], height=[320, 340], distance=100, prominence=20)
 
         return t_peaks
 
@@ -301,7 +301,7 @@ class EKGdata:
 
         return fig
 
-    def plot_time_series(self, start = None, end = None, peaks = False):
+    def plot_time_series(self, start = None, end = None, peaks = False, t_peaks = False):
         '''A function that plots the EKG data as a time series.'''
 
         # create a  empty figure
@@ -312,12 +312,12 @@ class EKGdata:
         time = self.df['New Time in ms'] / 1000
 
         # cut the data
-        mV = mV[start:end]
-        time = time[start:end]  
+        mV_cut = np.array(mV[start:end])
+        time_cut = np.array(time[start:end])  
 
         fig.add_trace(go.Scatter(
-            x=time,
-            y=mV,
+            x=time_cut,
+            y=mV_cut,
             mode='lines',
             name='EKG Data'
         ))
@@ -327,11 +327,12 @@ class EKGdata:
             peaks = self.find_peaks(start, end)
 
             # Ensure all peak indices are within the valid range
-            valid_peaks = [j for j in peaks if j < len(time)]
+            valid_peaks = [j for j in peaks if j < len(time_cut)]
+            valid_peaks = np.array(valid_peaks)
 
             fig.add_trace(go.Scatter(
-                x=[time[j] for j in valid_peaks],
-                y=[mV[j] for j in valid_peaks],
+                x=[time_cut[j] for j in valid_peaks],
+                y=[mV_cut[j] for j in valid_peaks],
                 mode='markers',
                 marker=dict(
                     size=8,
@@ -339,6 +340,26 @@ class EKGdata:
                     symbol='cross'
                 ),
                 name='R-Peaks'
+                ))
+            
+        if t_peaks == True:
+            # add the peaks 
+            t_peaks = self.find_t_peaks(start, end)
+
+            # Ensure all peak indices are within the valid range
+            valid_t_peaks = [j for j in t_peaks if j < len(time_cut)]
+            valid_t_peaks = np.array(valid_t_peaks)
+
+            fig.add_trace(go.Scatter(
+                x=[time_cut[j] for j in valid_t_peaks],
+                y=[mV_cut[j] for j in valid_t_peaks],
+                mode='markers',
+                marker=dict(
+                    size=8,
+                    color='green',
+                    symbol='cross'
+                ),
+                name='T-Peaks'
                 ))
 
         # add the layout

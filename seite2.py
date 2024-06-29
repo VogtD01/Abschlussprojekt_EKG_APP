@@ -144,13 +144,18 @@ def seite2():
         # min heart rate for the selected time
         st.write("Minimale Herzfrequenz: ", int(min_heart_rate1), "bpm")
 
-    # Fügen Sie einen Schalter für Peaks hinzu
+    #Schalter für R_Peaks
     peaks = False
     if st.checkbox("R-Peaks anzeigen", False):
         peaks = True
 
+    #Schaler für T_Peaks
+    t_peaks = False
+    if st.checkbox("T-Peaks anzeigen", False):
+        t_peaks = True
+
     # EKG-Daten als Plot anzeigen
-    fig = current_ekg_data_class.plot_time_series(start, end, peaks)
+    fig = current_ekg_data_class.plot_time_series(start, end, peaks, t_peaks)
     st.plotly_chart(fig)
 
     # Herzrate bestimmen
