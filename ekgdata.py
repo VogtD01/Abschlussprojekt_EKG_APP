@@ -49,14 +49,14 @@ class EKGdata:
     def find_peaks(self, start = None, end = None):
         '''A function that finds the peaks in the EKG data and returns the R-peaks as an array.'''
         
-        peaks, _ = signal.find_peaks(self.df['EKG in mV'][start:end], height=340)
+        peaks, _ = signal.find_peaks(self.df['EKG in mV'][start:end], height=340, distance=100, prominence=20)
 
         return peaks
     
     def find_t_peaks(self):
         '''A function that finds the T-Peaks in the EKG data and returns the T-peaks as a list.'''
 
-        t_peaks, _ = signal.find_peaks(self.df['EKG in mV'], height=[320, 340])
+        t_peaks, _ = signal.find_peaks(self.df['EKG in mV'], height=[320, 340], distance=100, prominence=20)
 
         return t_peaks
 
@@ -371,7 +371,7 @@ class EKGdata:
 
         return fig
     
-    def RT_interval(self): # fehlerhaft; Ausgabe ist zum teil negativ
+    def RT_interval(self): # nicht fertig
         '''A function that calculates the RT interval.'''
         r_peaks = self.find_peaks()
         t_peaks = self.find_t_peaks()
@@ -408,11 +408,8 @@ if __name__ == "__main__":
     #plt = ekg.heartratevariability()
     p_peaks = ekg.find_peaks()
     t_peaks = ekg.find_t_peaks()
-    
     RT_interval = ekg.RT_interval()
-    print(RT_interval)  
-    #plt = px.line(x = len(RT_interval), y = RT_interval)
-    #plt.show()
+    
 
     
 
