@@ -370,7 +370,7 @@ class EKGdata:
         )
         return fig
 
-    def heartratevariability(self): # nicht fertig
+    def heartratevariability(self):
         '''A function that plots the heart rate variability.'''
 
         peaks = self.find_peaks()
@@ -380,19 +380,42 @@ class EKGdata:
         for i in range(len(peaks)-1):
             time_between_peaks_in_ms[i] = (self.df['New Time in ms'][peaks[i+1]] - self.df['New Time in ms'][peaks[i]])
         
-        #create the figure
+        # calculate the heart rate variability
+        heart_rate_variability = abs(np.diff(time_between_peaks_in_ms))
+
+        # mean heart rate variability
+        mean_heart_rate_variability = np.mean(heart_rate_variability)
+
+        #max heart rate variability
+        max_heart_rate_variability = np.max(heart_rate_variability)
+
+        #min heart rate variability
+        min_heart_rate_variability = np.min(heart_rate_variability)
+
+
+        time_ms = self.df['New Time in ms'][peaks]
+        time_s = time_ms / 1000
+
+        # create a figure
         fig = go.Figure()
 
-        fig.add_trace(go.Scatter(
-            x = np.arange(0, len(time_between_peaks_in_ms), 1),
-            y = time_between_peaks_in_ms,
-            mode='lines',
-            name='Heart Rate Variability'
-            ))
+        # add the heart rate variability to the figure
+        fig.add_trace(go.Scatter( 
+            x = time_s[1:],
+            y = heart_rate_variability,
+            mode='lines', 
+            name='Heart Rate Variability'))
+        
+        # add the layout
+        fig.update_layout(
+            title='Heart Rate Variability',
+            xaxis_title='time in s',
+            yaxis_title='Heart Rate Variability in ms'
+        )
 
-        return fig
+        return fig, mean_heart_rate_variability, max_heart_rate_variability, min_heart_rate_variability
     
-    def RT_interval(self): # nicht fertig
+    def RT_interval(self):
         '''A function that calculates the RT interval.'''
         r_peaks = self.find_peaks()
         t_peaks = self.find_t_peaks()
@@ -416,7 +439,12 @@ class EKGdata:
         for i in range(len(r_peaks)):
             RT_interval[i] = self.df['New Time in ms'][t_peaks[i]] - self.df['New Time in ms'][r_peaks[i]]
 
-        return RT_interval
+        #mean/ max/ min RT interval
+        mean_RT_interval = np.mean(RT_interval)
+        max_RT_interval = np.max(RT_interval)
+        min_RT_interval = np.min(RT_interval)
+        
+        return mean_RT_interval, max_RT_interval, min_RT_interval
 
 
 if __name__ == "__main__":
@@ -426,7 +454,8 @@ if __name__ == "__main__":
     ekg = EKGdata(ekg_dict)
     	
     time_s = ekg.df['New Time in ms'] / 1000
-    #plt = ekg.heartratevariability()
+    plt = ekg.heartratevariability()
+    plt.show()
     p_peaks = ekg.find_peaks()
     t_peaks = ekg.find_t_peaks()
     RT_interval = ekg.RT_interval()

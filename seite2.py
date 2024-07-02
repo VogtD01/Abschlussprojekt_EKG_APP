@@ -117,6 +117,12 @@ def seite2():
     # Berechnen Sie die Peaks und die Herzfrequenz als schätzende Werte
     heartrate_array, mean_heartrate, max_heartrate, min_heartrate = current_ekg_data_class.estimate_heartrate()
 
+    # heart rate variability
+    fig_heart_rate_variability, mean_heart_rate_variability, max_heart_rate_variability, min_heart_rate_variability = current_ekg_data_class.heartratevariability()
+
+    # rt interval
+    mean_RT_interval, max_RT_interval, min_RT_interval = current_ekg_data_class.RT_interval()
+
     #create new columns
     col1, col2 = st.columns(2)
 
@@ -131,6 +137,18 @@ def seite2():
         st.write("Maximale Herzfrequenz: ", int(max_heartrate), "bpm")
         st.write("Minimale Herzfrequenz: ", int(min_heartrate), "bpm")
 
+        # heart rate variability
+        st.write("Durchschnittliche Herzfrequenzvariabilität: ", int(mean_heart_rate_variability), "ms")
+        st.write("Maximale Herzfrequenzvariabilität: ", int(max_heart_rate_variability), "ms")
+        st.write("Minimale Herzfrequenzvariabilität: ", int(min_heart_rate_variability), "ms")
+
+        # rt interval
+        st.write("Durchschnittliche Zeit RT-Intervall: ", int(mean_RT_interval), "ms")
+        st.write("Maximale Zeit RT-Intervall: ", int(max_RT_interval), "ms")
+        st.write("Minimale Zeit RT-Intervall: ", int(min_RT_interval), "ms")
+
+
+
     with col2:
         # get the heart rate for the selected time
         mean_heart_rate_1, heart_rate_array_1, max_heart_rate1, min_heart_rate1 = current_ekg_data_class.calc_heartrate_for_time(start, end)
@@ -143,6 +161,8 @@ def seite2():
         st.write("Maximale Herzfrequenz: ", int(max_heart_rate1), "bpm")
         # min heart rate for the selected time
         st.write("Minimale Herzfrequenz: ", int(min_heart_rate1), "bpm")
+
+
 
     #Schalter für R_Peaks
     peaks = False
@@ -163,3 +183,8 @@ def seite2():
     fig2 = current_ekg_data_class.plot_heartrate(heartrate_array, Person_class.calc_max_heart_rate())
     
     st.plotly_chart(fig2)
+
+    # heart rate variability plot
+    st.plotly_chart(fig_heart_rate_variability)
+
+
