@@ -62,13 +62,41 @@ def seite2():
 
         # Zweite Möglichkeit: Daten einzeln anzeigen, muss noch entschieden werden
         st.write("Daten von ", st.session_state.aktuelle_versuchsperson)
-            
-        st.markdown(f"**Geburtsdatum:** {person_dict['date_of_birth']}")
-        st.markdown(f"**Alter:** {Person_class.calc_age()}")
-        st.markdown(f"**ID:** {person_dict['id']}")
-        st.markdown(f"**Maximale Herzfrequenz:** {Person_class.calc_max_heart_rate()}")
 
+        try:
+            st.markdown(f"**Geburtsdatum:** {person_dict['date_of_birth']}")
+        except:
+            pass
 
+        try:
+            st.markdown(f"**Alter:** {Person_class.calc_age()}")
+        except:
+            pass
+
+        try:
+            st.markdown(f"**ID:** {person_dict['id']}")
+        except:
+            pass
+
+        try:
+            st.markdown(f"**Maximale Herzfrequenz:** {Person_class.calc_max_heart_rate()}")
+        except:
+            pass
+
+        try:
+            st.markdown(f"**Geschlecht:** {person_dict['Gender']}")
+        except:
+            pass
+        
+        try:
+            st.markdown(f"**Größe:** {person_dict['height']} cm")
+        except:
+            pass
+
+        try:
+            st.markdown(f"**Gewicht:** {person_dict['height']} kg")
+        except:
+            pass
             
 
 

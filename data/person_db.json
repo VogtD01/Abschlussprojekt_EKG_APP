@@ -16,7 +16,10 @@
                 "date": "11.3.2023",
                 "result_link": "data/ekg_data/04_Belastung.txt"
             }
-        ]
+        ],
+        "Gender": "m\u00e4nnlich",
+        "height": 180.0,
+        "weight": 80.0
     },
     {
         "id": 2,
