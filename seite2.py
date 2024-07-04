@@ -97,6 +97,11 @@ def seite2():
             st.markdown(f"**Gewicht:** {person_dict['height']} kg")
         except:
             pass
+
+        try:
+            st.write('BMI: ' + str(round(person_dict['weight'] / ((person_dict['height'] / 100) ** 2), 1)))
+        except:
+            pass
             
 
 

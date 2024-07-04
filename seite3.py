@@ -103,8 +103,11 @@ def seite3():
             st.write("Geburtsdatum wurde geändert")
 
     # Bild der Person ändern
-    st.subheader("Bild ändern")# nicht implementiert
-
+    st.subheader("Bild ändern")
+    image = st.file_uploader("Bild hochladen", type=["jpg", "jpeg", "png"])
+    
+    
+   
     #Körpergröße hinzufügen/ändern
     if 'height' not in person_dict:
         st.subheader("Körpergröße hinzufügen")

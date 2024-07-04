@@ -70,3 +70,6 @@ def get_plot_time_range(max_time_seconds, sample_rate, default_start=0.0, defaul
     end = int(end_seconds * 1000 * sample_rate)
 
     return start, end
+
+    
+
