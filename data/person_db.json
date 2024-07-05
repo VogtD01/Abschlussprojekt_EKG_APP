@@ -4,7 +4,7 @@
         "date_of_birth": 1989,
         "firstname": "Julian",
         "lastname": "Huber",
-        "picture_path": "data/pictures/tb.jpg",
+        "picture_path": "data/pictures\\tb.jpg",
         "ekg_tests": [
             {
                 "id": 1,

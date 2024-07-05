@@ -1,4 +1,6 @@
 import streamlit as st
+import os
+from PIL import Image
 
 # Funktion zum Einfügen benutzerdefinierter CSS
 def set_bg_hack():
@@ -71,5 +73,21 @@ def get_plot_time_range(max_time_seconds, sample_rate, default_start=0.0, defaul
 
     return start, end
 
+def save_image(image_name, image):
+    '''Speichert das Bild im Ordner pictures ab.'''
+
+    folder_name = 'data/pictures'
+    name_of_file = image_name
+    completeName = os.path.join(folder_name, name_of_file)
+
+    image = Image.open(image)
+
+    image.save(completeName)
     
+    return completeName
+        
+
+    
+
+        
 

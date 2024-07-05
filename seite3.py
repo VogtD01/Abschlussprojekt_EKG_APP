@@ -103,9 +103,26 @@ def seite3():
             st.write("Geburtsdatum wurde geändert")
 
     # Bild der Person ändern
-    st.subheader("Bild ändern")
-    image = st.file_uploader("Bild hochladen", type=["jpg", "jpeg", "png"])
-    
+    if 'picture_path' not in person_dict:
+        st.subheader("Bild hinzufügen")
+        image = st.file_uploader("Bild hochladen", type=["jpg", "jpeg", "png"])
+        if st.button("Bild hinzufügen"):
+            #Speichern des Bildes
+            path = sf.save_image(image.name, image)
+            person_dict['picture_path'] = path
+            read_person_data.update_person_data(person_dict)
+            st.write("Bild wurde hinzugefügt")
+
+    else:
+        st.subheader("Bild ändern")
+        image = st.file_uploader("Bild hochladen", type=["jpg", "jpeg", "png"])
+        if st.button("Bild ändern"):
+            #Speichern des Bildes
+            path = sf.save_image(image.name, image)
+            person_dict['picture_path'] = path
+            read_person_data.update_person_data(person_dict)
+            st.write("Bild wurde geändert")
+
     
    
     #Körpergröße hinzufügen/ändern
