@@ -186,7 +186,7 @@ def seite3():
 
     with tab2:
 
-        st.title("Personendaten editieren/ergänzen")
+        st.title("EKG-Daten editieren/ergänzen")
         # Lade alle Personen
         person_names = read_person_data.get_person_list(read_person_data.load_person_data())
         # Initialisiere Session State, Versuchperson, Bild, EKG-Test
@@ -212,6 +212,12 @@ def seite3():
                 else:
                     st.write("Kein Bild verfügbar")
 
+        st.subheader("EKG-Test hinzufügen")
+
+
+
+
+        st.subheader("EKG-Test löschen")
 
 
     with tab3:
