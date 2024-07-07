@@ -39,7 +39,10 @@ class EKGdata:
         self.id = ekg_dict["id"]
         self.date = ekg_dict["date"]
         self.data = ekg_dict["result_link"]
-        self.df = pd.read_csv(self.data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
+        try:
+            self.df = pd.read_csv(self.data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
+        except:
+            self.df = pd.read_fit(self.data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
         # Die Zeitspalte neu starten von 0 bis zum Ende der Daten
         self.df['New Time in ms'] = self.df['Time in ms'] - self.df['Time in ms'].iloc[0]
         # Die Abtastfrequenz berechnen
@@ -451,14 +454,9 @@ if __name__ == "__main__":
     print("This is a module with some functions to read the EKG data")
     
     ekg_dict = EKGdata.load_by_id(1, 1)
+    print(ekg_dict)
     ekg = EKGdata(ekg_dict)
     	
-    time_s = ekg.df['New Time in ms'] / 1000
-    plt = ekg.heartratevariability()
-    plt.show()
-    p_peaks = ekg.find_peaks()
-    t_peaks = ekg.find_t_peaks()
-    RT_interval = ekg.RT_interval()
     
 
     
