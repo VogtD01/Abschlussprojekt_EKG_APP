@@ -211,35 +211,36 @@ class EKGdata:
 
         # Y-Achse anpassen je nach Art des EKGs
         if is_exercise_ecg:
-            zone_ticks = [max_heart_rate * threshold for threshold, _ in self.heart_rate_zones]
+            zone_ticks = [max_heart_rate * threshold for threshold, _, _ in self.heart_rate_zones]
+            zone_ticks.append(max_heart_rate)  # Max Herzfrequenz hinzufügen
+            tick_texts = [f"{int(max_heart_rate * threshold)}" for threshold, _, _ in self.heart_rate_zones]
+            tick_texts.append(f"{int(max_heart_rate)}")  # Max Herzfrequenz Text hinzufügen
             fig.update_layout(
                 yaxis=dict(
                     title='Heart Rate in bpm',
                     tickvals=zone_ticks,
-                    ticktext=[f"{int(max_heart_rate * threshold)} bpm" for threshold, _ in self.heart_rate_zones],
-                    range=[max_heart_rate*0.4, max_heart_rate]
-                )
+                    ticktext=tick_texts,
+                    range=[max_heart_rate * 0.4, max_heart_rate]  # Dynamischer Bereich für Belastungs-EKG
             )
-        
+        )
         else:
             min_hr = np.min(heart_rate_smoothed)
             max_hr = np.max(heart_rate_smoothed)
             fig.update_yaxes(range=[min_hr - 5, max_hr + 5])  # Dynamischer Bereich für Ruhe-EKG
 
-
         return fig
 
     def add_heart_rate_zones(self, fig, time_data, max_heart_rate, heart_rate_smoothed, is_exercise_ecg):
         self.heart_rate_zones = [
-            (0.5, 'Gray'),
-            (0.6, 'Green'),
-            (0.7, 'yellow'),
-            (0.8, 'orange'),
-            (0.9, 'red')
+            (0.5, 'Gray', 'Zone 1'),
+            (0.6, 'Green', 'Zone 2'),
+            (0.7, 'Yellow', 'Zone 3'),
+            (0.8, 'Orange', 'Zone 4'),
+            (0.9, 'Red', 'Zone 5')
         ]
 
         # Hinzufügen der Herzfrequenz-Zonen als Rechtecke
-        for threshold, color in self.heart_rate_zones:
+        for threshold, color, label in self.heart_rate_zones:
             fig.add_shape(
                 type="rect",
                 x0=time_data.iloc[0],
@@ -261,7 +262,7 @@ class EKGdata:
                     color=color,
                     size=10
                 ),
-                name=f'Heart Rate Zone {int(threshold * 10)}'
+                name=label
             ))
 
 
