@@ -178,8 +178,30 @@ def save_ekg_data(ekg_data, file_name):
     with open(completeName, 'w') as file:
         for i in range(len(mV)):
             file.write(str(mV[i]) + '\t' + str(time[i]) + '\n')
-        
 
+
+    return completeName
+
+def save_polar_data(polar_data, file_name):
+    '''Speichert die Polar-Daten im Ordner data ab.'''
+
+    folder_name = 'data/polar_data'
+    name_of_file = file_name
+    completeName = os.path.join(folder_name, name_of_file)
+
+    # Polar-Daten in ein DataFrame einlesen
+    df = pd.read_csv(polar_data, sep='\t', header=None, names=['Heart Rate in bpm','Time in ms',])
+
+    bpm = df['Heart Rate in bpm']
+    bpm = bpm.tolist()
+
+    time = df['Time in ms']
+    time = time.tolist()
+
+    # Polar-Daten in eine Textdatei schreiben
+    with open(completeName, 'w') as file:
+        for i in range(len(bpm)):
+            file.write(str(bpm[i]) + '\t' + str(time[i]) + '\n')
 
 
     return completeName
