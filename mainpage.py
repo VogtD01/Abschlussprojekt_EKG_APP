@@ -31,8 +31,9 @@ with st.sidebar:
 # Logik zum Anzeigen der ausgewählten Seite
 if st.session_state.selected == "Home":
     seite1()
-elif st.session_state.selected == "Seite 2":
+elif st.session_state.selected == "EKG-Analyse":
     seite2()
-elif st.session_state.selected == "Seite 3":
+elif st.session_state.selected == "Benutzerdaten bearbeiten":
     seite3()
-    
+elif st.session_state.selected == "Polar Sportanalyse":
+    seite4()
