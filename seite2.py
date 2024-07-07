@@ -191,9 +191,14 @@ def seite2():
             fig = current_ekg_data_class.plot_time_series(start, end, peaks, t_peaks)
             st.plotly_chart(fig)
 
-            # Herzrate bestimmen
-            fig2 = current_ekg_data_class.plot_heartrate(heartrate_array, Person_class.calc_max_heart_rate())
+            # Selectbox für X-Achsenformat
+            x_axis_format = st.selectbox("X-Achsenformat", ["Sekunden", "Minuten"])
+
+            
+            # Herzrate bestimmen und als Plot anzeigen
+            fig2 = current_ekg_data_class.plot_heartrate(heartrate_array, Person_class.calc_max_heart_rate(), x_axis_format)
             st.plotly_chart(fig2)
+
 
             # EKG-Informationen anzeigen
             if "show_ekg_info" not in st.session_state:
