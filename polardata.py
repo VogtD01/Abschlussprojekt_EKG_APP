@@ -8,6 +8,22 @@ import os
 ##############################
 
 class PolarData:
+
+    """def __init__(self, polar_dict):
+        '''A class that represents the Polar Data.'''
+        
+        self.id = polar_dict["id"]
+        self.date = polar_dict["date"]
+        self.time = polar_dict["time"]
+        self.duration = polar_dict["duration"]
+        self.distance = polar_dict["distance"]
+        self.calories = polar_dict["calories"]
+        self.avg_heart_rate = polar_dict["avg_heart_rate"]
+        self.max_heart_rate = polar_dict["max_heart_rate"]
+        self.training_load = polar_dict["training_load"]
+        self.training_effect = polar_dict["training_effect"]
+        self.link = polar_dict["link"]"""
+
     @staticmethod
     def load_by_id(PersonID, PolarID=None):
         '''A function that loads the Polar Data by id and returns the Data as a dictionary.'''
