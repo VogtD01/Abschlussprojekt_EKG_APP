@@ -196,7 +196,7 @@ def seite2():
 
             
             # Herzrate bestimmen und als Plot anzeigen
-            fig2 = current_ekg_data_class.plot_heartrate(heartrate_array, Person_class.calc_max_heart_rate(), x_axis_format)
+            fig2 = current_ekg_data_class.plot_heartrate(heartrate_array, Person_class.calc_max_heart_rate(), x_axis_format, min_heartrate) ###ßßß
             st.plotly_chart(fig2)
 
 

@@ -158,8 +158,7 @@ class EKGdata:
         return mean_heart_rate, heart_rate_array, max_heart_rate, min_heart_rate
 
 
-    def plot_heartrate(self, heart_rate, max_heart_rate, x_axis_format):
-
+    def plot_heartrate(self, heart_rate, max_heart_rate, x_axis_format, min_heart_rate):
         peaks = self.find_peaks()
         # Glätten der Herzfrequenzdaten
         heart_rate_smoothed = signal.savgol_filter(heart_rate, 100, 2)
@@ -176,6 +175,9 @@ class EKGdata:
         else:
             time_data = time_s
             xaxis_title = 'Time in s'
+
+        # Entscheidung ob Ruhe-EKG oder Belastungs-EKG
+        is_exercise_ecg = np.max(heart_rate_smoothed) >= max_heart_rate * 0.5
 
         # Plot erstellen
         fig = go.Figure()
@@ -198,7 +200,7 @@ class EKGdata:
         ))
 
         # Herzfrequenz-Zonen hinzufügen
-        self.add_heart_rate_zones(fig, time_data, max_heart_rate, heart_rate_smoothed)
+        self.add_heart_rate_zones(fig, time_data, max_heart_rate, heart_rate_smoothed, is_exercise_ecg)
 
         # Layout aktualisieren
         fig.update_layout(
@@ -207,43 +209,60 @@ class EKGdata:
             yaxis_title='Heart Rate in bpm'
         )
 
+        # Y-Achse anpassen je nach Art des EKGs
+        if is_exercise_ecg:
+            zone_ticks = [max_heart_rate * threshold for threshold, _ in self.heart_rate_zones]
+            fig.update_layout(
+                yaxis=dict(
+                    title='Heart Rate in bpm',
+                    tickvals=zone_ticks,
+                    ticktext=[f"{int(max_heart_rate * threshold)} bpm" for threshold, _ in self.heart_rate_zones],
+                    range=[max_heart_rate*0.4, max_heart_rate]
+                )
+            )
+        
+        else:
+            min_hr = np.min(heart_rate_smoothed)
+            max_hr = np.max(heart_rate_smoothed)
+            fig.update_yaxes(range=[min_hr - 5, max_hr + 5])  # Dynamischer Bereich für Ruhe-EKG
+
+
         return fig
 
-    def add_heart_rate_zones(self, fig, time_data, max_heart_rate, heart_rate_smoothed):
-        heart_rate_zones = [
-            (0.5, 'Green'),
-            (0.6, 'yellow'),
-            (0.7, 'orange'),
-            (0.8, 'red'),
-            (0.9, 'purple')
+    def add_heart_rate_zones(self, fig, time_data, max_heart_rate, heart_rate_smoothed, is_exercise_ecg):
+        self.heart_rate_zones = [
+            (0.5, 'Gray'),
+            (0.6, 'Green'),
+            (0.7, 'yellow'),
+            (0.8, 'orange'),
+            (0.9, 'red')
         ]
 
-        for threshold, color in heart_rate_zones:
-            if max(heart_rate_smoothed) >= max_heart_rate * threshold:
-                fig.add_shape(
-                    type="rect",
-                    x0=time_data.iloc[0],
-                    y0=max_heart_rate * threshold,
-                    x1=time_data.iloc[-1],
-                    y1=max_heart_rate * (threshold + 0.1),
-                    line=dict(color=color, width=2),
-                    fillcolor=color,
-                    opacity=0.5,
-                    layer="below"
-                )
+        # Hinzufügen der Herzfrequenz-Zonen als Rechtecke
+        for threshold, color in self.heart_rate_zones:
+            fig.add_shape(
+                type="rect",
+                x0=time_data.iloc[0],
+                y0=max_heart_rate * threshold,
+                x1=time_data.iloc[-1],
+                y1=max_heart_rate * (threshold + 0.1),
+                line=dict(color=color, width=2),
+                fillcolor=color,
+                opacity=0.5,
+                layer="below"
+            )
 
-                # Legende für Herzfrequenz-Zonen hinzufügen
-                fig.add_trace(go.Scatter(
-                    x=[None],
-                    y=[None],
-                    mode='markers',
-                    marker=dict(
-                        color=color,
-                        size=10
-                    ),
-                    name=f'Heart Rate Zone {int(threshold * 10)}'
-                ))
-
+            # Legende für Herzfrequenz-Zonen hinzufügen
+            fig.add_trace(go.Scatter(
+                x=[None],
+                y=[None],
+                mode='markers',
+                marker=dict(
+                    color=color,
+                    size=10
+                ),
+                name=f'Heart Rate Zone {int(threshold * 10)}'
+            ))
 
 
 
