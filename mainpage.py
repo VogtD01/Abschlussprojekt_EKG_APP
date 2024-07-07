@@ -18,8 +18,8 @@ if 'selected' not in st.session_state:
 with st.sidebar:
     selected = option_menu(
         menu_title="Navigation",  # Erster Menü-Titel
-        options=["Home", "EKG-Analyse", "Benutzerdaten bearbeiten"],  # Menü-Optionen
-        icons=["house", "book", "gear"],  # Icons für die Menü-Optionen
+        options=["Home", "EKG-Analyse", "Benutzerdaten bearbeiten", "Polar-Analyse"],  # Menü-Optionen
+        icons=["house", "book", "gear", "gear"],  # Icons für die Menü-Optionen
         menu_icon="cast",  # Icon für das Menü
         default_index=0,  # Standardmäßig ausgewählte Option
     )

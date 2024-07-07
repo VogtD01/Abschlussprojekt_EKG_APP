@@ -13,6 +13,7 @@ def set_bg_hack():
     st.markdown(
         f"""
         <style>
+
         .stApp {{
             background-color: #0e1117;
             color: white;

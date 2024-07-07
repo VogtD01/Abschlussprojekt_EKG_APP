@@ -70,5 +70,16 @@
         "date_of_birth": "2004",
         "picture_path": null,
         "ekg_tests": []
+    },
+    {
+        "id": 6,
+        "firstname": "Dominic",
+        "lastname": "Vogt",
+        "date_of_birth": "2001",
+        "picture_path": "data/pictures\\vd23-041-marcgilsdorf.jpg",
+        "ekg_tests": [],
+        "height": 188.0,
+        "weight": 78.0,
+        "Gender": "m\u00e4nnlich"
     }
 ]

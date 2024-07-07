@@ -10,187 +10,111 @@ from PIL import Image
 
 # Funktion für Seite 3
 def seite3():
-
-    tab1, tab2, tab3, tab4 = st.tabs(["Personendaten editieren/ergänzen", "EKG Daten hinzufügen", "EKG Daten löschen", "Neue Person hinzufügen"])
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "Personendaten editieren/ergänzen", "EKG Daten hinzufügen", "EKG Daten löschen", "Neue Person hinzufügen"])
 
     with tab1:
+        #st.title("Personendaten editieren/ergänzen")
+        st.markdown("<h1 style='color: white;'>Personendaten editieren/ergänzen</h1>", unsafe_allow_html=True)
 
-        st.title("Personendaten editieren/ergänzen")
+        
+
         # Lade alle Personen
         person_names = read_person_data.get_person_list(read_person_data.load_person_data())
         # Initialisiere Session State, Versuchperson, Bild, EKG-Test
         sf.initialize_session_state()
 
-        
         col1, col2 = st.columns([1, 2])
-
         with col2:
             st.write("Versuchsperson auswählen")
             st.session_state.aktuelle_versuchsperson = st.selectbox(
-                'Versuchsperson',
-                options=person_names, key="sbVersuchsperson")
-            
+                'Versuchsperson', options=person_names, key="sbVersuchsperson")
+        
         with col1:
             if st.session_state.aktuelle_versuchsperson:
-                # Finde den Pfad zur Bilddatei
-                person_dict = read_person_data.find_person_data_by_name(st.session_state.aktuelle_versuchsperson)
-                st.session_state.picture_path = person_dict["picture_path"]
+                person_dict = read_person_data.find_person_data_by_name(
+                    st.session_state.aktuelle_versuchsperson)
+                st.session_state.picture_path = person_dict.get("picture_path", "")
                 if st.session_state.picture_path:
                     image = Image.open(st.session_state.picture_path)
                     st.image(image, caption=st.session_state.aktuelle_versuchsperson)
                 else:
                     st.write("Kein Bild verfügbar")
+
         
+        st.markdown("<h3 style='color: white;'>Daten ändern</h3>", unsafe_allow_html=True)
         
-        # Vorname der Person hinzufügen/ändern
-        if 'firstname' not in person_dict:
-            st.subheader("Vornamen hinzufügen")
-            new_firstname = st.text_input("Neuer Vorname", placeholder= "z.B. Max")
-            if st.button("Vorname hinzufügen"):
-                person_dict['firstname'] = new_firstname
-                read_person_data.update_person_data(person_dict)
-                st.write("Vorname wurde hinzugefügt")
-        else:
-            st.subheader("Voramen ändern")
-            st.write("Aktueller Vorname: ", person_dict['firstname'] )
-            new_firstname = st.text_input("Neuer Vorname", placeholder= "z.B. Max")
-            if st.button("Vorname ändern"):
-                person_dict['firstname'] = new_firstname
-                read_person_data.update_person_data(person_dict)
-                st.write("Vorname wurde geändert")
 
-        # Nachname der Person Hinzuüfgen/ändern
-        if 'lastname' not in person_dict:
-            st.subheader("Nachnamen hinzufügen")
-            new_lastname = st.text_input("Neuer Nachname", placeholder= "z.B. Mustermann")
-            if st.button("Nachname hinzufügen"):
-                person_dict['lastname'] = new_lastname
-                read_person_data.update_person_data(person_dict)
-                st.write("Nachname wurde hinzugefügt")
-        else:
-            st.subheader("Nachnamen ändern")
-            st.write("Aktueller Nachname: ", person_dict['lastname'] )
-            new_lastname = st.text_input("Neuer Nachname", placeholder= "z.B. Mustermann")
-            if st.button("Nachname ändern"):
-                person_dict['lastname'] = new_lastname
-                read_person_data.update_person_data(person_dict)
-                st.write("Nachname wurde geändert")
+        # Definiere die Felder
+        fields = [
+            ("Vorname", "firstname", "z.B. Max"),
+            ("Nachname", "lastname", "z.B. Mustermann"),
+            ("Geburtsdatum", "date_of_birth", "z.B. 1990"),
+            ("Körpergröße (cm)", "height", "z.B. 180"),
+            ("Körpergewicht (kg)", "weight", "z.B. 75"),
+            ("Geschlecht", "Gender", ["männlich", "weiblich", "divers"])
+        ]
 
-        # Custom CSS to ensure button text visibility
-        st.markdown("""
-            <style>
-            .stButton button {
-                color: black; /* Change the color to ensure visibility */
-                font-size: 16px; /* Adjust font size as needed */
-            }
-            </style>
-            """, unsafe_allow_html=True)
+        # Erstelle eine Tabelle mit den Feldern
+        for field, key, placeholder in fields:
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col1:
+                st.markdown(f"**{field}**")
+            with col2:
+                if key in person_dict:
+                    current_value = person_dict[key]
+                    if key == "Gender":
+                        new_value = option_menu("Geschlecht", placeholder, key=f"option_menu_{key}", styles={
+                            #"container": {"padding": "0!important", "font-size": "12px"},  # Hier kannst du die Schriftgröße der Geschlechtsauswahl ändern
+                            #"nav-link": {"font-size": "12px", "padding": "5px"}  # Hier kannst du die Schriftgröße und die Innenabstände der Optionen ändern
+                        })
+                    else:
+                        new_value = st.text_input(f"Neuer {field}", value=current_value, placeholder=placeholder)
+                else:
+                    if key == "Gender":
+                        new_value = option_menu("Geschlecht", placeholder, key=f"option_menu_{key}", styles={
+                            #"container": {"padding": "0!important", "font-size": "12px"},  # Hier kannst du die Schriftgröße der Geschlechtsauswahl ändern
+                            #"nav-link": {"font-size": "12px", "padding": "5px"}  # Hier kannst du die Schriftgröße und die Innenabstände der Optionen ändern
+                        })
+                    else:
+                        new_value = st.text_input(f"Neuer {field}", placeholder=placeholder)
+            with col3:
+                if key in person_dict:
+                    if st.button(f"ändern", key=f"btn_{key}_change"):
+                        person_dict[key] = new_value
+                        read_person_data.update_person_data(person_dict)
+                        st.write(f"{field} wurde geändert")
+                else:
+                    if st.button(f"hinzufügen", key=f"btn_{key}_add"):
+                        person_dict[key] = new_value
+                        read_person_data.update_person_data(person_dict)
+                        st.write(f"{field} wurde hinzugefügt")
 
-        # Geburtsdatum der Person hinzufügen/ändern
-        if 'date_of_birth' not in person_dict:
-            st.subheader("Geburtsdatum hinzufügen")
-            st.write("Geben Sie nur das Geburstjahr an, z.B. 1990")
-            new_date_of_birth = st.text_input("Neues Geburtsdatum", placeholder= "z.B 1990")
-            if st.button("Geburtsdatum hinzufügen"):
-                person_dict['date_of_birth'] = int(new_date_of_birth)
-                read_person_data.update_person_data(person_dict)
-                st.write("Geburtsdatum wurde hinzugefügt")
-
-        else:
-            st.subheader("Geburtsdatum ändern")
-            st.write("Aktuelles Geburtsdatum: ", person_dict['date_of_birth'] )
-            st.write("Geben Sie nur das Geburstjahr an, z.B. 1990")
-            new_date_of_birth = st.text_input("Neues Geburtsdatum", placeholder= "z.B 1990")
-            if st.button("Geburtsdatum ändern"):
-                person_dict['date_of_birth'] = int(new_date_of_birth)
-                read_person_data.update_person_data(person_dict)
-                st.write("Geburtsdatum wurde geändert")
-
-        # Bild der Person ändern
-        if 'picture_path' not in person_dict:
-            st.subheader("Bild hinzufügen")
+        # Bild ändern
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col1:
+            st.markdown("**Bild**")
+        with col2:
             image = st.file_uploader("Bild hochladen", type=["jpg", "jpeg", "png"])
-            if st.button("Bild hinzufügen"):
-                #Speichern des Bildes
-                path = sf.save_image(image.name, image)
-                person_dict['picture_path'] = path
-                read_person_data.update_person_data(person_dict)
-                st.write("Bild wurde hinzugefügt")
+        with col3:
+            if st.session_state.picture_path:
+                if st.button("ändern", key="btn_picture_change"):
+                    sf.delete_image(person_dict['picture_path'])
+                    path = sf.save_image(image.name, image)
+                    person_dict['picture_path'] = path
+                    read_person_data.update_person_data(person_dict)
+                    st.write("Bild wurde geändert")
+            else:
+                if st.button("hinzufügen", key="btn_picture_add"):
+                    path = sf.save_image(image.name, image)
+                    person_dict['picture_path'] = path
+                    read_person_data.update_person_data(person_dict)
+                    st.write("Bild wurde hinzugefügt")
 
-        else:
-            st.subheader("Bild ändern")
-            image = st.file_uploader("Bild hochladen", type=["jpg", "jpeg", "png"])
-            if st.button("Bild ändern"):
-
-                #Löschen des alten Bildes
-                sf.delete_image(person_dict['picture_path'])    
-
-                #Speichern des Bildes
-                path = sf.save_image(image.name, image)
-                person_dict['picture_path'] = path
-                read_person_data.update_person_data(person_dict)
-                st.write("Bild wurde geändert")
-
-        
-    
-        #Körpergröße hinzufügen/ändern
-        if 'height' not in person_dict:
-            st.subheader("Körpergröße hinzufügen")
-            new_height = st.number_input("Neue Körpergröße in cm")
-            if st.button("Körpergröße hinzuüfgen"):
-                person_dict['height'] = new_height
-                read_person_data.update_person_data(person_dict)
-                st.write("Körpergröße wurde hinzugefügt")
-
-        else:
-            st.subheader("Körpergröße ändern")
-            st.write("Aktuelle Körpergröße: ", person_dict['height'], " cm")
-            new_height = st.number_input("Neue Körpergröße in cm")
-            if st.button("Körpergröße ändern"):
-                person_dict['height'] = new_height
-                read_person_data.update_person_data(person_dict)
-                st.write("Körpergröße wurde geändert")
-
-        # Körpergewicht hinzufügen/ändern
-        if 'weight' not in person_dict:
-            st.subheader("Körpergewicht hinzufügen")
-            new_weight = st.number_input("Neues Körpergewicht in kg")
-            if st.button("Körpergewicht hinzuufügen"):
-                person_dict['weight'] = new_weight
-                read_person_data.update_person_data(person_dict)
-                st.write("Körpergewicht wurde hinzugefügt")
-
-        else:
-            st.subheader("Körpergewicht ändern")
-            st.write("Aktuelles Körpergewicht: ", person_dict['weight'], " kg")
-            new_weight = st.number_input("Neues Körpergewicht in kg")
-            if st.button("Körpergewicht ändern"):
-                person_dict['weight'] = new_weight
-                read_person_data.update_person_data(person_dict)
-                st.write("Körpergewicht wurde geändert")
-
-
-        # Geschlecht hinzufügen/ändern
-        if 'Gender' not in person_dict:
-            st.subheader("Geschlecht hinzufügen")
-            new_gender = option_menu("Geschlecht", ["männlich", "weiblich"])
-            if st.button("Geschlecht hinzufügen"):
-                person_dict['Gender'] = new_gender
-                read_person_data.update_person_data(person_dict)
-                st.write("Geschlecht wurde hinzugefügt")
-
-        else:
-            st.subheader("Geschlecht ändern")
-            st.write("Aktuelles Geschlecht: ", person_dict['Gender'])
-            new_gender = option_menu("Geschlecht", ["männlich", "weiblich"])
-            if st.button("Geschlecht ändern"):
-                person_dict['Gender'] = new_gender
-                read_person_data.update_person_data(person_dict)
-                st.write("Geschlecht wurde geändert")
 
     with tab2:
 
-        st.title("EKG-Daten hinzufügen")
+        st.markdown("<h1 style='color: white;'>EKG-Daten hinzufügen</h1>", unsafe_allow_html=True)
         # Lade alle Personen
         person_names = read_person_data.get_person_list(read_person_data.load_person_data())
         # Initialisiere Session State, Versuchperson, Bild, EKG-Test
@@ -241,7 +165,7 @@ def seite3():
                 
     with tab3:
             
-            st.title("EKG-Daten löschen")
+            st.markdown("<h1 style='color: white;'>EKG-Daten löschen</h1>", unsafe_allow_html=True)
             # Lade alle Personen
             person_names = read_person_data.get_person_list(read_person_data.load_person_data())
             # Initialisiere Session State, Versuchperson, Bild, EKG-Test
@@ -271,7 +195,8 @@ def seite3():
             ekgdata_dict = ekgdata.EKGdata.load_by_id(person_dict["id"])
             
 
-            st.write("## EKG-Daten auswählen")
+            st.markdown("<h3 style='color: white;'>EKG-Daten auswählen</h3>", unsafe_allow_html=True)
+            
             # Für eine Person gibt es ggf. mehrere EKG-Daten. Diese müssen über den Pfad ausgewählt werden können
             ekg_list = []
             date_id_mapping = {}
@@ -305,7 +230,7 @@ def seite3():
 
     with tab4:
         
-        st.title("Neue Person hinzufügen")
+        st.markdown("<h1 style='color: white;'>Neue Person hinzufügen</h1>", unsafe_allow_html=True)
         st.write("Bitte geben Sie die Daten der neuen Person ein.")
 
         new_firstname = st.text_input("Vorname", placeholder="Max")
