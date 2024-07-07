@@ -158,190 +158,97 @@ class EKGdata:
         return mean_heart_rate, heart_rate_array, max_heart_rate, min_heart_rate
 
 
-    def plot_heartrate(self, heart_rate, max_heart_rate):
-        '''A function that plots the heart rate from the EKG data.'''
+    def plot_heartrate(self, heart_rate, max_heart_rate, x_axis_format):
 
         peaks = self.find_peaks()
+        # Glätten der Herzfrequenzdaten
+        heart_rate_smoothed = signal.savgol_filter(heart_rate, 100, 2)
 
-        #smooth the heart rate 
-        heart_rate = signal.savgol_filter(heart_rate, 100, 2)
-        
-        # plot the heart rate
+        # Zeitdaten für die x-Achse in Sekunden und Minuten berechnen
         time_ms = self.df['New Time in ms'][peaks]
         time_s = time_ms / 1000
-        
+        time_min = time_s / 60
 
-        # create a figure
+        # Wählen Sie zwischen Sekunden und Minuten für die x-Achse
+        if x_axis_format == "Minuten":
+            time_data = time_min
+            xaxis_title = 'Time in min'
+        else:
+            time_data = time_s
+            xaxis_title = 'Time in s'
+
+        # Plot erstellen
         fig = go.Figure()
 
-        # add the heart rate to the figure
+        # Herzfrequenzdaten hinzufügen
         fig.add_trace(go.Scatter(
-            x = time_s, 
-            y = heart_rate, 
-            mode='lines', 
-            name='Heart Rate'))
-        
-        # add the mean heart rate
-        fig.add_trace(go.Scatter(
-            x = time_s, 
-            y = np.mean(heart_rate) * np.ones(len(heart_rate)), # plot the mean heart rate
+            x=time_data,
+            y=heart_rate_smoothed,
             mode='lines',
-            line=dict(dash='dash'), 
-            name='Mean Heart Rate'))
-        
-        # add heartratezone 1
-        if max(heart_rate) >= max_heart_rate * 0.5:
-            fig.add_shape(
-                type="rect",
-                x0=time_s.iloc[0],
-                y0=max_heart_rate * 0.5,
-                x1=time_s.iloc[-1],
-                y1=max_heart_rate * 0.6,
-                line=dict(
-                    color="Green",
-                    width=2,
-                ),
-                fillcolor="Green",
-                opacity=0.5,
-                layer="below",
-            )
+            name='Heart Rate'
+        ))
 
-            # add the heartrate zone to the legend
-            fig.add_trace(go.Scatter(
-                x=[None],
-                y=[None],
-                mode='markers',
-                marker=dict(
-                    color='Green',
-                    size=10,
-                ),
-                name='Heart Rate Zone 1'
-            ))
+        # Mittlere Herzfrequenz hinzufügen
+        fig.add_trace(go.Scatter(
+            x=time_data,
+            y=np.mean(heart_rate_smoothed) * np.ones(len(heart_rate_smoothed)),
+            mode='lines',
+            line=dict(dash='dash'),
+            name='Mean Heart Rate'
+        ))
 
-        # add heartratezone 2
-        if max(heart_rate) >= max_heart_rate * 0.6:
-            fig.add_shape(
-                type="rect",
-                x0=time_s.iloc[0],
-                y0=max_heart_rate * 0.6,
-                x1=time_s.iloc[-1],
-                y1=max_heart_rate * 0.7,
-                line=dict(
-                    color="yellow",
-                    width=2,
-                ),
-                fillcolor="yellow",
-                opacity=0.5,
-                layer="below",
-            )
+        # Herzfrequenz-Zonen hinzufügen
+        self.add_heart_rate_zones(fig, time_data, max_heart_rate, heart_rate_smoothed)
 
-            # add the heartrate zone to the legend
-            fig.add_trace(go.Scatter(
-                x=[None],
-                y=[None],
-                mode='markers',
-                marker=dict(
-                    color='yellow',
-                    size=10,
-                ),
-                name='Heart Rate Zone 2'
-            ))
-
-        # add heartratezone 3
-        if max(heart_rate) >= max_heart_rate * 0.7:
-            fig.add_shape(
-                type="rect",
-                x0=time_s.iloc[0],
-                y0=max_heart_rate * 0.7,
-                x1=time_s.iloc[-1],
-                y1=max_heart_rate * 0.8,
-                line=dict(
-                    color="orange",
-                    width=2,
-                ),
-                fillcolor="orange",
-                opacity=0.5,
-                layer="below",
-            )
-
-            # add the heartrate zone to the legend
-            fig.add_trace(go.Scatter(
-                x=[None],
-                y=[None],
-                mode='markers',
-                marker=dict(
-                    color='orange',
-                    size=10,
-                ),
-                name='Heart Rate Zone 3'
-            ))
-
-        # add heartratezone 4
-        if max(heart_rate) >= max_heart_rate * 0.8:
-            fig.add_shape(
-                type="rect",
-                x0=time_s.iloc[0],
-                y0=max_heart_rate * 0.8,
-                x1=time_s.iloc[-1],
-                y1=max_heart_rate * 0.9,
-                line=dict(
-                    color="red",
-                    width=2,
-                ),
-                fillcolor="red",
-                opacity=0.5,
-                layer="below",
-            )
-
-            # add the heartrate zone to the legend
-            fig.add_trace(go.Scatter(
-                x=[None],
-                y=[None],
-                mode='markers',
-                marker=dict(
-                    color='red',
-                    size=10,
-                ),
-                name='Heart Rate Zone 4'
-            ))
-
-        # add heartratezone 5
-        if max(heart_rate) >= max_heart_rate * 0.9:
-            fig.add_shape(
-                type="rect",
-                x0=time_s.iloc[0],
-                y0=max_heart_rate * 0.9,
-                x1=time_s.iloc[-1],
-                y1=max_heart_rate,
-                line=dict(
-                    color="purple",
-                    width=2,
-                ),
-                fillcolor="purple",
-                opacity=0.5,
-                layer="below",
-            )
-
-            # add the heartrate zone to the legend
-            fig.add_trace(go.Scatter(
-                x=[None],
-                y=[None],
-                mode='markers',
-                marker=dict(
-                    color='purple',
-                    size=10,
-                ),
-                name='Heart Rate Zone 5'
-            ))
-
-        # add the layout
+        # Layout aktualisieren
         fig.update_layout(
             title='Heart Rate',
-            xaxis_title='Time in s',
+            xaxis_title=xaxis_title,
             yaxis_title='Heart Rate in bpm'
         )
 
         return fig
+
+    def add_heart_rate_zones(self, fig, time_data, max_heart_rate, heart_rate_smoothed):
+        heart_rate_zones = [
+            (0.5, 'Green'),
+            (0.6, 'yellow'),
+            (0.7, 'orange'),
+            (0.8, 'red'),
+            (0.9, 'purple')
+        ]
+
+        for threshold, color in heart_rate_zones:
+            if max(heart_rate_smoothed) >= max_heart_rate * threshold:
+                fig.add_shape(
+                    type="rect",
+                    x0=time_data.iloc[0],
+                    y0=max_heart_rate * threshold,
+                    x1=time_data.iloc[-1],
+                    y1=max_heart_rate * (threshold + 0.1),
+                    line=dict(color=color, width=2),
+                    fillcolor=color,
+                    opacity=0.5,
+                    layer="below"
+                )
+
+                # Legende für Herzfrequenz-Zonen hinzufügen
+                fig.add_trace(go.Scatter(
+                    x=[None],
+                    y=[None],
+                    mode='markers',
+                    marker=dict(
+                        color=color,
+                        size=10
+                    ),
+                    name=f'Heart Rate Zone {int(threshold * 10)}'
+                ))
+
+
+
+
+
+
 
     def plot_time_series(self, start = None, end = None, peaks = False, t_peaks = False):
         '''A function that plots the EKG data as a time series.'''
@@ -486,7 +393,29 @@ class EKGdata:
         max_RT_interval = np.max(RT_interval)
         min_RT_interval = np.min(RT_interval)
         
-        return mean_RT_interval, max_RT_interval, min_RT_interval
+        # Create a time array for plotting
+        time_ms = self.df['New Time in ms'][r_peaks]
+        time_s = time_ms / 1000
+
+        # Plot erstellen
+        fig = go.Figure()
+
+        # RT-Intervalle hinzufügen
+        fig.add_trace(go.Scatter(
+            x = time_s,
+            y = RT_interval,
+            mode = 'lines+markers',
+            name = 'RT Intervall'
+        ))
+
+        # Layout hinzufügen
+        fig.update_layout(
+            title = 'RT-Intervall',
+            xaxis_title = 'Zeit in s',
+            yaxis_title = 'RT-Intervall in ms'
+        )
+
+        return fig, mean_RT_interval, max_RT_interval, min_RT_interval
 
 
 if __name__ == "__main__":

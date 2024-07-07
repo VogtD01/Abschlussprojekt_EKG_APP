@@ -3,6 +3,11 @@ import os
 from PIL import Image
 import pandas as pd
 
+import streamlit as st
+
+# Beispielpersonen
+person_names = ["Person 1", "Person 2", "Person 3"]
+
 # Funktion zum Einfügen benutzerdefinierter CSS
 def set_bg_hack():
     st.markdown(
@@ -19,10 +24,69 @@ def set_bg_hack():
             background-color: #1a1b1f;
             color: white;
         }}
+        .stApp .stSelectbox label {{
+            color: white;  /* Farbe des Labels ändern */
+        }}
+        .stApp .stTextInput label {{
+            color: white;  /* Farbe des Labels für Eingabeboxen ändern */
+        }}
+        .stApp .stTextArea label {{
+            color: white;  /* Farbe des Labels für Textarea ändern */
+        }}
+        .stApp .stNumberInput label {{
+            color: white;  /* Farbe des Labels für Number Input ändern */
+        }}
+        .stApp .stDateInput label {{
+            color: white;  /* Farbe des Labels für Date Input ändern */
+        }}
+        .stApp .stTimeInput label {{
+            color: white;  /* Farbe des Labels für Time Input ändern */
+        }}
+        .stApp .stFileUploader label {{
+            color: white;  /* Farbe des Labels für File Uploader ändern */
+        }}
+        .stApp .stColorPicker label {{
+            color: white;  /* Farbe des Labels für Color Picker ändern */
+        }}
+        .stApp .stCheckbox div[data-testid="stCheckboxLabel"] > label {{
+            color: white;  /* Farbe des Labels für Checkbox ändern */
+        }}
+        .stApp .stTabs [role="tab"] {{
+            color: white;  /* Farbe des Texts in den Tabs ändern */
+        }}
+        .stApp .stTabs [role="tab"][aria-selected="true"] {{
+            background-color: #1a1b1f;  /* Hintergrundfarbe des ausgewählten Tabs ändern */
+            color: white;  /* Textfarbe des ausgewählten Tabs */
+        }}
+        .stApp .stImage .caption-container > .caption {{
+            color: white;  /* Farbe der Bildunterschrift ändern */
+        }}
+        .stButton button {{
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 8px;
+        }}
+        .stButton button:hover {{
+            background-color: #45a049; /* Darker green on hover */
+        }}
         </style>
         """,
         unsafe_allow_html=True
     )
+    
+
+# Aufruf der Funktion zum Setzen der benutzerdefinierten CSS-Styles
+set_bg_hack()
+
+
 
 
 # Funktion zum Initialisieren des Session State
