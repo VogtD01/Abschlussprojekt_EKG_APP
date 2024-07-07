@@ -63,10 +63,18 @@ class Person:
             list_of_ids.append(eintrag["id"])
         return list_of_ids
     
-    def get_new_id(list_of_ids):
+    """def get_new_id(list_of_ids):
         '''A function that returns a new ID for a person.'''
         new_id = max(list_of_ids) + 1
-        return new_id
+        return new_id"""
+    
+    @staticmethod
+    def get_new_id(list_of_ids):
+        '''A function that returns a new ID for a person.'''
+        if not list_of_ids:
+            return 1
+        else:
+            return max(list_of_ids) + 1
         
     def __init__(self, person_dict) -> None:
         self.date_of_birth = person_dict["date_of_birth"]

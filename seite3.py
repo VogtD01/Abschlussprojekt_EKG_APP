@@ -7,11 +7,12 @@ import matplotlib.pyplot as plt
 import person
 import streamlit_functions as sf
 from PIL import Image
+from polardata import PolarData
 
 # Funktion für Seite 3
 def seite3():
     tab1, tab2, tab3, tab4 = st.tabs([
-        "Personendaten editieren/ergänzen", "EKG Daten hinzufügen", "EKG Daten löschen", "Neue Person hinzufügen"])
+        "Personendaten editieren/ergänzen", "Daten hinzufügen", "Daten löschen", "Neue Person hinzufügen"])
 
     with tab1:
         #st.title("Personendaten editieren/ergänzen")
@@ -110,15 +111,17 @@ def seite3():
                     st.write("Bild wurde hinzugefügt")
 
 
+    
     with tab2:
-
-        st.markdown("<h1 style='color: white;'>EKG-Daten hinzufügen</h1>", unsafe_allow_html=True)
+        #st.markdown("<h1 style='color: white; font-size: 24px;'>EKG/Polar-Daten hinzufügen</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='color: white;'>EKG/Polar-Daten hinzufügen</h1>", unsafe_allow_html=True)
         # Lade alle Personen
         person_names = read_person_data.get_person_list(read_person_data.load_person_data())
+        
         # Initialisiere Session State, Versuchperson, Bild, EKG-Test
         sf.initialize_session_state()
-
         
+        # Personenauswahl und Bild
         col1, col2 = st.columns([1, 2])
 
         with col2:
@@ -126,6 +129,90 @@ def seite3():
             st.session_state.aktuelle_versuchsperson = st.selectbox(
                 'Versuchsperson',
                 options=person_names, key="sbVersuchsperson2")
+            
+        with col1:
+            if st.session_state.aktuelle_versuchsperson:
+                # Finde den Pfad zur Bilddatei
+                person_dict = read_person_data.find_person_data_by_name(st.session_state.aktuelle_versuchsperson)
+                st.session_state.picture_path = person_dict.get("picture_path")
+                if st.session_state.picture_path:
+                    image = Image.open(st.session_state.picture_path)
+                    st.image(image, caption=st.session_state.aktuelle_versuchsperson)
+                else:
+                    st.write("Kein Bild verfügbar")
+        
+        # Zwei Spalten für Upload-Felder
+        col1, col2 = st.columns([1, 1])
+
+        with col2:
+            st.markdown("<h3 style='color: white; font-size: 18px;'>Polar-Test hochladen</h3>", unsafe_allow_html=True)
+            polar_test = st.file_uploader("", type=["CSV"])  # Leerer String für Platzhalter
+            polar_datum = st.text_input("Datum des Polar-Tests", placeholder="z.B. 23.12.2021")
+            
+            if st.button("Polar-Test hinzufügen"):
+                path = sf.save_polar_data(polar_test, polar_test.name)
+                
+                # Aktuelle Personendaten aktualisieren
+                person_dict = read_person_data.find_person_data_by_name(st.session_state.aktuelle_versuchsperson)
+                
+                if 'polar_tests' in person_dict:
+                    # IDs der vorhandenen Polar-Tests sammeln
+                    existing_polar_ids = [test['id'] for test in person_dict['polar_tests']]
+                    next_polar_id = max(existing_polar_ids, default=0) + 1
+                else:
+                    next_polar_id = 1
+                
+                new_polartest = {
+                    "id": next_polar_id,
+                    "date": polar_datum,
+                    "result_link": path
+                }
+
+                if 'polar_tests' not in person_dict:
+                    person_dict['polar_tests'] = []
+
+                person_dict['polar_tests'].append(new_polartest)
+                read_person_data.update_person_data(person_dict)
+
+                st.write("Polar-Test wurde hinzugefügt")
+
+        with col1:
+            st.markdown("<h3 style='color: white; font-size: 18px;'>EKG-Test hochladen</h3>", unsafe_allow_html=True)
+            ekg_test = st.file_uploader("", type=["txt"])  # Leerer String für Platzhalter
+            ekg_datum = st.text_input("Datum des EKG-Tests", placeholder="z.B. 23.12.2021")
+
+            if st.button("EKG-Test hinzufügen"):
+                path = sf.save_ekg_data(ekg_test, ekg_test.name)
+                
+                # EKG IDs sammeln
+                all_ekg_ids = [test['id'] for person in read_person_data.load_person_data() for test in person.get('ekg_tests', [])]
+                
+                new_ekg_test = {
+                    "id": person.Person.get_new_id(all_ekg_ids),
+                    "date": ekg_datum,
+                    "result_link": path
+                }
+
+                person_dict['ekg_tests'].append(new_ekg_test)
+                read_person_data.update_person_data(person_dict)
+
+                st.write("EKG-Test wurde hinzugefügt")
+                    
+                
+    with tab3:
+        st.markdown("<h1 style='color: white;'>EKG/Polar-Daten löschen</h1>", unsafe_allow_html=True)
+        # Lade alle Personen
+        person_names = read_person_data.get_person_list(read_person_data.load_person_data())
+        # Initialisiere Session State, Versuchperson, Bild, EKG-Test
+        sf.initialize_session_state()
+
+        col1, col2 = st.columns([1, 2])
+
+        with col2:
+            st.write("Versuchsperson auswählen")
+            st.session_state.aktuelle_versuchsperson = st.selectbox(
+                'Versuchsperson',
+                options=person_names, key="sbVersuchsperson3")
             
         with col1:
             if st.session_state.aktuelle_versuchsperson:
@@ -139,59 +226,12 @@ def seite3():
                     st.write("Kein Bild verfügbar")
 
         
-        ekg_test = st.file_uploader("EKG-Test hochladen", type=["txt"])
-
-        datum = st.text_input("Datum des EKG-Tests", placeholder="z.B. 23.12.2021")
         
+        col1, col2 = st.columns([1, 1])
 
-        if st.button("EKG-Test hinzufügen"):
-                path = sf.save_ekg_data(ekg_test, ekg_test.name)
-
-                new_ekg_test = {
-                "id": person.Person.get_new_id(ekgdata.EKGdata.get_IDs()),
-                "date": datum,
-                "result_link": path
-                }
-
-                person_dict['ekg_tests'].append(new_ekg_test)
-
-                print(person_dict)
-                read_person_data.update_person_data(person_dict)
-
-                st.write("EKG-Test wurde hinzugefügt")
-                
-                
-    with tab3:
-            
-            st.markdown("<h1 style='color: white;'>EKG-Daten löschen</h1>", unsafe_allow_html=True)
-            # Lade alle Personen
-            person_names = read_person_data.get_person_list(read_person_data.load_person_data())
-            # Initialisiere Session State, Versuchperson, Bild, EKG-Test
-            sf.initialize_session_state()
-    
-            
-            col1, col2 = st.columns([1, 2])
-    
-            with col2:
-                st.write("Versuchsperson auswählen")
-                st.session_state.aktuelle_versuchsperson = st.selectbox(
-                    'Versuchsperson',
-                    options=person_names, key="sbVersuchsperson3")
-                
-            with col1:
-                if st.session_state.aktuelle_versuchsperson:
-                    # Finde den Pfad zur Bilddatei
-                    person_dict = read_person_data.find_person_data_by_name(st.session_state.aktuelle_versuchsperson)
-                    st.session_state.picture_path = person_dict["picture_path"]
-                    if st.session_state.picture_path:
-                        image = Image.open(st.session_state.picture_path)
-                        st.image(image, caption=st.session_state.aktuelle_versuchsperson)
-                    else:
-                        st.write("Kein Bild verfügbar")
-    
+        with col1:
             # Öffne EKG-Daten
             ekgdata_dict = ekgdata.EKGdata.load_by_id(person_dict["id"])
-            
 
             st.markdown("<h3 style='color: white;'>EKG-Daten auswählen</h3>", unsafe_allow_html=True)
             
@@ -209,21 +249,46 @@ def seite3():
                 options=ekg_list)
 
             selected_date = st.session_state.ekg_test_date
-            if selected_date != None:
-
+            if selected_date is not None:
                 selected_ekg_id = date_id_mapping[selected_date]
-
                 for ekg in ekgdata_dict:
                     if ekg["id"] == selected_ekg_id:
                         link = ekg["result_link"]
                         
-                
                 if st.button("EKG-Test löschen"):
                     ekgdata.EKGdata.delete_by_id(person_dict["id"], selected_ekg_id, link)
-                    st.write("EKG-Test wurde gelöscht")             
+                    st.write("EKG-Test wurde gelöscht")  
 
+        with col2:
 
-        
+            # Öffne Polar-Daten
+            polar_dict = PolarData.load_by_id(person_dict["id"])
+
+            st.markdown("<h3 style='color: white;'>Polar-Daten auswählen</h3>", unsafe_allow_html=True)
+
+            # Für eine Person gibt es ggf. mehrere Polar-Daten. Diese müssen über den Pfad ausgewählt werden können
+            polar_list = []
+            date_id_mapping = {}
+
+            for polar in polar_dict:
+                polar_list.append(polar["date"])
+                date_id_mapping[polar["date"]] = polar["id"]
+
+            # Auswahlbox für Polar-Daten
+            st.session_state.polar_test_date = st.selectbox(
+                'Polar-Test Datum',
+                options=polar_list)
+
+            selected_date = st.session_state.polar_test_date
+            if selected_date is not None:
+                selected_polar_id = date_id_mapping[selected_date]
+                for polar in polar_dict:
+                    if polar["id"] == selected_polar_id:
+                        link = polar["result_link"]
+                
+                if st.button("Polar-Test löschen"):
+                    PolarData.delete_by_id(person_dict["id"], selected_polar_id, link)
+                    st.write("Polar-Test wurde gelöscht")
 
 
     with tab4:

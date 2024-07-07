@@ -189,6 +189,12 @@ def save_polar_data(polar_data, file_name):
     name_of_file = file_name
     completeName = os.path.join(folder_name, name_of_file)
 
+    # Polar-Daten in ein DataFrame einlesen
+    df = pd.read_csv(polar_data, sep=",", skiprows=2)
+
+    # Polar-Daten in eine CSV-Datei schreiben
+    df.to_csv(completeName, index=False)
+    
     
     return completeName
         

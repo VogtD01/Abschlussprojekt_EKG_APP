@@ -1,6 +1,101 @@
 import pandas as pd
 import plotly.express as px
 import numpy as np
+import json
+import os
+
+
+##############################
+
+class PolarData:
+    @staticmethod
+    def load_by_id(PersonID, PolarID=None):
+        '''A function that loads the Polar Data by id and returns the Data as a dictionary.'''
+        
+        # Load the person data
+        try:
+            with open('data/person_db.json', 'r') as file:
+                person_data = json.load(file)
+        except FileNotFoundError:
+            print("Datei nicht gefunden")
+            return {}
+        except json.JSONDecodeError:
+            print("Fehler beim Dekodieren der JSON-Datei")
+            return {}
+        
+        # Get the polar data
+        if PolarID is None:
+            for eintrag in person_data:
+                if eintrag["id"] == PersonID:
+                    return eintrag.get("polar_tests", [])
+            else:
+                return []
+        
+        for eintrag in person_data:
+            if eintrag["id"] == PersonID:
+                for polar_test in eintrag.get("polar_tests", []):
+                    if polar_test["id"] == PolarID:
+                        return polar_test
+        else:
+            return {}
+
+    @staticmethod
+    def get_IDs():
+        '''A function that retrieves all Polar test IDs from the person_data.'''
+        
+        ids = []
+        try:
+            with open('data/person_db.json', 'r') as file:
+                person_data = json.load(file)
+                for person in person_data:
+                    if 'polar_tests' in person:
+                        ids.extend([test['id'] for test in person['polar_tests']])
+        except FileNotFoundError:
+            print("Datei nicht gefunden")
+        except json.JSONDecodeError:
+            print("Fehler beim Dekodieren der JSON-Datei")
+        return ids
+
+    @staticmethod
+    def delete_by_id(PersonID, PolarID, link):
+        '''A function that deletes the Polar test data by id.'''
+        
+        # Load the person data
+        try:
+            with open('data/person_db.json', 'r') as file:
+                person_data = json.load(file)
+        except FileNotFoundError:
+            print("Datei nicht gefunden")
+            return
+        except json.JSONDecodeError:
+            print("Fehler beim Dekodieren der JSON-Datei")
+            return
+        
+        # Remove the file associated with the link
+        try:
+            os.remove(link)
+        except FileNotFoundError:
+            print(f"Die Datei {link} wurde nicht gefunden.")
+        except Exception as e:
+            print(f"Fehler beim Löschen der Datei {link}: {e}")
+            return
+        
+        # Find the Polar test data and delete it
+        for eintrag in person_data:
+            if eintrag["id"] == PersonID:
+                if 'polar_tests' in eintrag:
+                    for polar_test in eintrag["polar_tests"]:
+                        if polar_test["id"] == PolarID:
+                            eintrag["polar_tests"].remove(polar_test)
+                            break
+        
+        # Save the updated person data back to the file
+        with open("data/person_db.json", "w") as file:
+            json.dump(person_data, file, indent=4)
+
+
+
+#####################
 
 def read_activity_csv_polar(path="data/polar_data/Dominic_Vogt_2024-05-18_16-02-30.CSV"):
     df = pd.read_csv(path, sep=",", skiprows=2)

@@ -4,7 +4,7 @@
         "date_of_birth": 1989,
         "firstname": "Julian",
         "lastname": "Huber",
-        "picture_path": "data/pictures\\tb.jpg",
+        "picture_path": "data/pictures/tb.jpg",
         "ekg_tests": [
             {
                 "id": 1,
@@ -15,9 +15,14 @@
                 "id": 2,
                 "date": "11.3.2023",
                 "result_link": "data/ekg_data/04_Belastung.txt"
+            },
+            {
+                "id": 6,
+                "date": "1.1.2001",
+                "result_link": "data/ekg_data/06_Ruhe_test.txt"
             }
         ],
-        "Gender": "m\u00e4nnlich",
+        "Gender": "m\u00c3\u00a4nnlich",
         "height": 180.0,
         "weight": 80.0
     },
@@ -67,7 +72,7 @@
         "id": 5,
         "firstname": "Felix",
         "lastname": "Sturm",
-        "date_of_birth": "2004",
+        "date_of_birth": 2004,
         "picture_path": null,
         "ekg_tests": []
     },
@@ -75,11 +80,18 @@
         "id": 6,
         "firstname": "Dominic",
         "lastname": "Vogt",
-        "date_of_birth": "2001",
-        "picture_path": "data/pictures\\vd23-041-marcgilsdorf.jpg",
+        "date_of_birth": 2001,
+        "picture_path": "data/pictures/vd23-041-marcgilsdorf.jpg",
         "ekg_tests": [],
         "height": 188.0,
         "weight": 78.0,
-        "Gender": "m\u00e4nnlich"
+        "Gender": "m\u00c3\u00a4nnlich",
+        "polar_tests": [
+            {
+                "id": 1,
+                "date": "01.06.24",
+                "result_link": "data/polar_data\\Dominic_Vogt_2024-06-01_16-15-29.CSV"
+            }
+        ]
     }
 ]
