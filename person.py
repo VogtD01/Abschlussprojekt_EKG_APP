@@ -55,6 +55,19 @@ class Person:
         else:
             return {}
         
+    def get_personIDs(person_data):
+        '''A function that returns a list of all person IDs.'''
+        list_of_ids = []
+
+        for eintrag in person_data:
+            list_of_ids.append(eintrag["id"])
+        return list_of_ids
+    
+    def get_new_id(list_of_ids):
+        '''A function that returns a new ID for a person.'''
+        new_id = max(list_of_ids) + 1
+        return new_id
+        
     def __init__(self, person_dict) -> None:
         self.date_of_birth = person_dict["date_of_birth"]
         self.firstname = person_dict["firstname"]
@@ -85,8 +98,7 @@ class Person:
 if __name__ == "__main__":
     print("This is a module with some functions to read the person data")
     persons = Person.load_person_data()
+    print(type(persons))
+    
     person_names = Person.get_person_list(persons)
     person1 = Person(Person.find_person_data_by_name("Huber, Julian"))
-    print(person1.calc_max_heart_rate())
-    print(Person.load_by_id(1))
-    

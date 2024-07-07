@@ -34,6 +34,22 @@ class EKGdata:
                         return ekg_test
         else:
             return {}
+        
+    @staticmethod
+    def get_IDs():
+        '''A function that returns all IDs of the EKG data as a list.'''
+
+        # load the person data
+        file = open("data/person_db.json")
+        person_data = json.load(file)
+
+        # get the ekg data
+        ids = []
+        for eintrag in person_data:
+            for ekg_test in eintrag["ekg_tests"]:
+                ids.append(ekg_test["id"])
+
+        return ids
 
     def __init__(self, ekg_dict):
         self.id = ekg_dict["id"]
@@ -454,7 +470,7 @@ if __name__ == "__main__":
     print("This is a module with some functions to read the EKG data")
     
     ekg_dict = EKGdata.load_by_id(1, 1)
-    print(ekg_dict)
+    
     ekg = EKGdata(ekg_dict)
     	
     

@@ -45,7 +45,7 @@ def seite3():
         # Vorname der Person hinzufügen/ändern
         if 'firstname' not in person_dict:
             st.subheader("Vornamen hinzufügen")
-            new_firstname = st.text_input("Neuer Vorname")
+            new_firstname = st.text_input("Neuer Vorname", placeholder= "z.B. Max")
             if st.button("Vorname hinzufügen"):
                 person_dict['firstname'] = new_firstname
                 read_person_data.update_person_data(person_dict)
@@ -53,7 +53,7 @@ def seite3():
         else:
             st.subheader("Voramen ändern")
             st.write("Aktueller Vorname: ", person_dict['firstname'] )
-            new_firstname = st.text_input("Neuer Name")
+            new_firstname = st.text_input("Neuer Vorname", placeholder= "z.B. Max")
             if st.button("Vorname ändern"):
                 person_dict['firstname'] = new_firstname
                 read_person_data.update_person_data(person_dict)
@@ -62,7 +62,7 @@ def seite3():
         # Nachname der Person Hinzuüfgen/ändern
         if 'lastname' not in person_dict:
             st.subheader("Nachnamen hinzufügen")
-            new_lastname = st.text_input("Neuer Nachname")
+            new_lastname = st.text_input("Neuer Nachname", placeholder= "z.B. Mustermann")
             if st.button("Nachname hinzufügen"):
                 person_dict['lastname'] = new_lastname
                 read_person_data.update_person_data(person_dict)
@@ -70,7 +70,7 @@ def seite3():
         else:
             st.subheader("Nachnamen ändern")
             st.write("Aktueller Nachname: ", person_dict['lastname'] )
-            new_lastname = st.text_input("Neuer Nachname")
+            new_lastname = st.text_input("Neuer Nachname", placeholder= "z.B. Mustermann")
             if st.button("Nachname ändern"):
                 person_dict['lastname'] = new_lastname
                 read_person_data.update_person_data(person_dict)
@@ -90,7 +90,7 @@ def seite3():
         if 'date_of_birth' not in person_dict:
             st.subheader("Geburtsdatum hinzufügen")
             st.write("Geben Sie nur das Geburstjahr an, z.B. 1990")
-            new_date_of_birth = st.text_input("Neues Geburtsdatum")
+            new_date_of_birth = st.text_input("Neues Geburtsdatum", placeholder= "z.B 1990")
             if st.button("Geburtsdatum hinzufügen"):
                 person_dict['date_of_birth'] = int(new_date_of_birth)
                 read_person_data.update_person_data(person_dict)
@@ -100,7 +100,7 @@ def seite3():
             st.subheader("Geburtsdatum ändern")
             st.write("Aktuelles Geburtsdatum: ", person_dict['date_of_birth'] )
             st.write("Geben Sie nur das Geburstjahr an, z.B. 1990")
-            new_date_of_birth = st.text_input("Neues Geburtsdatum")
+            new_date_of_birth = st.text_input("Neues Geburtsdatum", placeholder= "z.B 1990")
             if st.button("Geburtsdatum ändern"):
                 person_dict['date_of_birth'] = int(new_date_of_birth)
                 read_person_data.update_person_data(person_dict)
@@ -211,3 +211,28 @@ def seite3():
                     st.image(image, caption=st.session_state.aktuelle_versuchsperson)
                 else:
                     st.write("Kein Bild verfügbar")
+
+
+
+    with tab3:
+        
+        st.title("Neue Person hinzufügen")
+        st.write("Bitte geben Sie die Daten der neuen Person ein.")
+
+        new_firstname = st.text_input("Vorname", placeholder="Max")
+        new_lastname = st.text_input("Nachname", placeholder="Mustermann")
+        new_date_of_birth = st.text_input("Geburtsdatum (Jahr)",placeholder="z.B. 1990")
+        new_id = person.Person.get_new_id(person.Person.get_personIDs(read_person_data.load_person_data()))
+
+        new_person = {
+            "id": new_id,
+            "firstname": new_firstname,
+            "lastname": new_lastname,
+            "date_of_birth": new_date_of_birth,
+            "picture_path": None,
+            "ekg_tests": []
+        }
+
+        if st.button("Person hinzufügen"):
+            read_person_data.add_person(read_person_data.load_person_data(), new_person)
+            st.write("Person wurde hinzugefügt")

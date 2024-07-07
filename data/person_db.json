@@ -62,5 +62,13 @@
                 "result_link": "data/ekg_data/05_Belastung.txt"
             }
         ]
+    },
+    {
+        "id": 5,
+        "firstname": "Felix",
+        "lastname": "Sturm",
+        "date_of_birth": "2004",
+        "picture_path": null,
+        "ekg_tests": []
     }
 ]

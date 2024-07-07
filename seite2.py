@@ -125,99 +125,103 @@ def seite2():
         st.session_state.ekg_test_date = st.selectbox(
             'EKG-Test Datum',
             options=ekg_list)
+    
+    try:
+        with col2:
+            selected_date = st.session_state.ekg_test_date
+            selected_ekg_id = date_id_mapping[selected_date]
 
-    with col2:
-        selected_date = st.session_state.ekg_test_date
-        selected_ekg_id = date_id_mapping[selected_date]
+            current_ekg_data = ekgdata.EKGdata.load_by_id(person_dict["id"], selected_ekg_id)
+            current_ekg_data_class = ekgdata.EKGdata(current_ekg_data)
+            current_sample_rate = current_ekg_data_class.sample_rate    # Abtastfrequenz des aktuellen EKGs
 
-        current_ekg_data = ekgdata.EKGdata.load_by_id(person_dict["id"], selected_ekg_id)
-        current_ekg_data_class = ekgdata.EKGdata(current_ekg_data)
-        current_sample_rate = current_ekg_data_class.sample_rate    # Abtastfrequenz des aktuellen EKGs
-
-       
-        # Berechnung der maximalen Zeit in Sekunden
-        max_time_seconds = current_ekg_data_class.df['New Time in ms'].iloc[-1] / 1000
-
-
-        # Bestimmung der Start- und Endzeit des Plots
-        start, end = sf.get_plot_time_range(max_time_seconds, current_sample_rate, 0, 10) 
-        """
-        Hier kann die Funktion get_plot_time_range aus streamlit_functions.py verwendet werden, um die Start- und Endzeit des Plots zu bestimmen.
-        Mit der dritten und vierten Zahl in der Funktion können die Standardwerte für die Start- und Endzeit des Plots festgelegt werden."""
+        
+            # Berechnung der maximalen Zeit in Sekunden
+            max_time_seconds = current_ekg_data_class.df['New Time in ms'].iloc[-1] / 1000
 
 
+            # Bestimmung der Start- und Endzeit des Plots
+            start, end = sf.get_plot_time_range(max_time_seconds, current_sample_rate, 0, 10) 
+            """
+            Hier kann die Funktion get_plot_time_range aus streamlit_functions.py verwendet werden, um die Start- und Endzeit des Plots zu bestimmen.
+            Mit der dritten und vierten Zahl in der Funktion können die Standardwerte für die Start- und Endzeit des Plots festgelegt werden."""
 
-    # Berechnen Sie die Peaks und die Herzfrequenz als schätzende Werte
-    heartrate_array, mean_heartrate, max_heartrate, min_heartrate = current_ekg_data_class.estimate_heartrate()
 
-    # heart rate variability
-    fig_heart_rate_variability, mean_heart_rate_variability, max_heart_rate_variability, min_heart_rate_variability = current_ekg_data_class.heartratevariability()
 
-    # rt interval
-    mean_RT_interval, max_RT_interval, min_RT_interval = current_ekg_data_class.RT_interval()
-
-    #create new columns
-    col1, col2 = st.columns(2)
-
-    with col1:
-        #header for the first column in white
-        st.markdown("<h3 style='color: white;'>EKG-Daten für die gesamte Aktivität</h3>", unsafe_allow_html=True)
-        # length of the activity
-        st.write("Länge der Aktivität: ", max_time_seconds, " Sekunden")
-        # mean heart rate
-        st.write("Durchschnittliche Herzfrequenz: ", int(mean_heartrate), "bpm")
-        # max heart rate
-        st.write("Maximale Herzfrequenz: ", int(max_heartrate), "bpm")
-        st.write("Minimale Herzfrequenz: ", int(min_heartrate), "bpm")
+        # Berechnen Sie die Peaks und die Herzfrequenz als schätzende Werte
+        heartrate_array, mean_heartrate, max_heartrate, min_heartrate = current_ekg_data_class.estimate_heartrate()
 
         # heart rate variability
-        st.write("Durchschnittliche Herzfrequenzvariabilität: ", int(mean_heart_rate_variability), "ms")
-        st.write("Maximale Herzfrequenzvariabilität: ", int(max_heart_rate_variability), "ms")
-        st.write("Minimale Herzfrequenzvariabilität: ", int(min_heart_rate_variability), "ms")
+        fig_heart_rate_variability, mean_heart_rate_variability, max_heart_rate_variability, min_heart_rate_variability = current_ekg_data_class.heartratevariability()
 
         # rt interval
-        st.write("Durchschnittliche Zeit RT-Intervall: ", int(mean_RT_interval), "ms")
-        st.write("Maximale Zeit RT-Intervall: ", int(max_RT_interval), "ms")
-        st.write("Minimale Zeit RT-Intervall: ", int(min_RT_interval), "ms")
+        mean_RT_interval, max_RT_interval, min_RT_interval = current_ekg_data_class.RT_interval()
+
+        #create new columns
+        col1, col2 = st.columns(2)
+
+        with col1:
+            #header for the first column in white
+            st.markdown("<h3 style='color: white;'>EKG-Daten für die gesamte Aktivität</h3>", unsafe_allow_html=True)
+            # length of the activity
+            st.write("Länge der Aktivität: ", max_time_seconds, " Sekunden")
+            # mean heart rate
+            st.write("Durchschnittliche Herzfrequenz: ", int(mean_heartrate), "bpm")
+            # max heart rate
+            st.write("Maximale Herzfrequenz: ", int(max_heartrate), "bpm")
+            st.write("Minimale Herzfrequenz: ", int(min_heartrate), "bpm")
+
+            # heart rate variability
+            st.write("Durchschnittliche Herzfrequenzvariabilität: ", int(mean_heart_rate_variability), "ms")
+            st.write("Maximale Herzfrequenzvariabilität: ", int(max_heart_rate_variability), "ms")
+            st.write("Minimale Herzfrequenzvariabilität: ", int(min_heart_rate_variability), "ms")
+
+            # rt interval
+            st.write("Durchschnittliche Zeit RT-Intervall: ", int(mean_RT_interval), "ms")
+            st.write("Maximale Zeit RT-Intervall: ", int(max_RT_interval), "ms")
+            st.write("Minimale Zeit RT-Intervall: ", int(min_RT_interval), "ms")
 
 
 
-    with col2:
-        # get the heart rate for the selected time
-        mean_heart_rate_1, heart_rate_array_1, max_heart_rate1, min_heart_rate1 = current_ekg_data_class.calc_heartrate_for_time(start, end)
-        # header for the second column in white
-        st.markdown("<h3 style='color: white;'>EKG-Daten für die eingegebene Zeit</h3>", unsafe_allow_html=True)
-        st.write(".")
-        # mean heart rate for the selected time
-        st.write("Durchschnittliche Herzfrequenz: ", int(mean_heart_rate_1), "bpm")
-        # max heart rate for the selected time
-        st.write("Maximale Herzfrequenz: ", int(max_heart_rate1), "bpm")
-        # min heart rate for the selected time
-        st.write("Minimale Herzfrequenz: ", int(min_heart_rate1), "bpm")
+        with col2:
+            # get the heart rate for the selected time
+            mean_heart_rate_1, heart_rate_array_1, max_heart_rate1, min_heart_rate1 = current_ekg_data_class.calc_heartrate_for_time(start, end)
+            # header for the second column in white
+            st.markdown("<h3 style='color: white;'>EKG-Daten für die eingegebene Zeit</h3>", unsafe_allow_html=True)
+            st.write(".")
+            # mean heart rate for the selected time
+            st.write("Durchschnittliche Herzfrequenz: ", int(mean_heart_rate_1), "bpm")
+            # max heart rate for the selected time
+            st.write("Maximale Herzfrequenz: ", int(max_heart_rate1), "bpm")
+            # min heart rate for the selected time
+            st.write("Minimale Herzfrequenz: ", int(min_heart_rate1), "bpm")
 
 
 
-    #Schalter für R_Peaks
-    peaks = False
-    if st.checkbox("R-Peaks anzeigen", False):
-        peaks = True
+        #Schalter für R_Peaks
+        peaks = False
+        if st.checkbox("R-Peaks anzeigen", False):
+            peaks = True
 
-    #Schaler für T_Peaks
-    t_peaks = False
-    if st.checkbox("T-Peaks anzeigen", False):
-        t_peaks = True
+        #Schaler für T_Peaks
+        t_peaks = False
+        if st.checkbox("T-Peaks anzeigen", False):
+            t_peaks = True
 
-    # EKG-Daten als Plot anzeigen
-    fig = current_ekg_data_class.plot_time_series(start, end, peaks, t_peaks)
-    st.plotly_chart(fig)
+        # EKG-Daten als Plot anzeigen
+        fig = current_ekg_data_class.plot_time_series(start, end, peaks, t_peaks)
+        st.plotly_chart(fig)
 
-    # Herzrate bestimmen
-    
-    fig2 = current_ekg_data_class.plot_heartrate(heartrate_array, Person_class.calc_max_heart_rate())
-    
-    st.plotly_chart(fig2)
+        # Herzrate bestimmen
+        
+        fig2 = current_ekg_data_class.plot_heartrate(heartrate_array, Person_class.calc_max_heart_rate())
+        
+        st.plotly_chart(fig2)
 
-    # heart rate variability plot
-    st.plotly_chart(fig_heart_rate_variability)
+        # heart rate variability plot
+        st.plotly_chart(fig_heart_rate_variability)
+
+    except:
+        pass
 
 

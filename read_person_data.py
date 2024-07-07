@@ -1,4 +1,4 @@
-#%% Import
+
 import json
 import pandas as pd
 
@@ -8,7 +8,7 @@ def load_person_data():
     file = open("data/person_db.json")
     person_data = json.load(file)
     return person_data
-# %%
+
 
 def get_person_list(person_data):
     """A Function that takes the Persons-Dictionary and returns a List auf all person names"""
@@ -19,12 +19,6 @@ def get_person_list(person_data):
     return list_of_names
 
 
-
-# %% Test
-#get_person_list(load_person_data())
-
-
-# %%
 
 def find_person_data_by_name(suchstring):
     """ Eine Funktion der Nachname, Vorname als ein String übergeben wird
@@ -59,3 +53,10 @@ def update_person_data(person_dict):
 
     with open("data/person_db.json", "w") as file:
         json.dump(person_data, file, indent=4)
+
+def add_person(person_data, person_dict):
+    """Eine Funktion, die ein Dictionary einer Person entgegennimmt und die Daten in der Datenbank aktualisiert"""
+    person_data.append(person_dict)
+    
+    with open("data/person_db.json", "w") as file:
+         json.dump(person_data, file, indent=4)
