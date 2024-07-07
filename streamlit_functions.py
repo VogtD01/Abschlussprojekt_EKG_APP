@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 from PIL import Image
+import pandas as pd
 
 # Funktion zum Einfügen benutzerdefinierter CSS
 def set_bg_hack():
@@ -84,6 +85,38 @@ def save_image(image_name, image):
 
     image.save(completeName)
     
+    return completeName
+
+def delete_image(image_path):
+    '''Löscht das Bild aus dem Ordner pictures.'''
+
+    os.remove(image_path)
+
+
+def save_ekg_data(ekg_data, file_name):
+    '''Speichert die EKG-Daten im Ordner data ab.'''
+
+    folder_name = 'data/ekg_data'
+    name_of_file = file_name
+    completeName = os.path.join(folder_name, name_of_file)
+
+    # EKG-Daten in ein DataFrame einlesen
+    df = pd.read_csv(ekg_data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
+
+    mV = df['EKG in mV']
+    mV = mV.tolist()
+
+    time = df['Time in ms']
+    time = time.tolist()
+
+    # EKG-Daten in eine Textdatei schreiben
+    with open(completeName, 'w') as file:
+        for i in range(len(mV)):
+            file.write(str(mV[i]) + '\t' + str(time[i]) + '\n')
+        
+
+
+
     return completeName
         
 

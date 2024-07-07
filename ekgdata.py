@@ -4,8 +4,11 @@ import scipy.signal as signal
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
+import os
 
-# Klasse EKG-Data für Peakfinder, die uns ermöglicht peaks zu finden
+
+# Klasse EKG-Data fü
+# r Peakfinder, die uns ermöglicht peaks zu finden
 class EKGdata:
 
     @staticmethod
@@ -50,21 +53,41 @@ class EKGdata:
                 ids.append(ekg_test["id"])
 
         return ids
+    
+    def delete_by_id(PersonID, EKGID, link):
+        '''A function that deletes the EKG data by id.'''
+
+        # load the person data
+        file = open("data/person_db.json")
+        person_data = json.load(file)
+
+        os.remove(link)
+
+        # get the ekg data
+        for eintrag in person_data:
+            if eintrag["id"] == PersonID:
+                for ekg_test in eintrag["ekg_tests"]:
+                    if ekg_test["id"] == EKGID:
+                        eintrag["ekg_tests"].remove(ekg_test)
+                        break
+
+        # save the person data
+        with open("data/person_db.json", "w") as file:
+            json.dump(person_data, file, indent=4)
+    
 
     def __init__(self, ekg_dict):
         self.id = ekg_dict["id"]
         self.date = ekg_dict["date"]
         self.data = ekg_dict["result_link"]
-        try:
-            self.df = pd.read_csv(self.data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
-        except:
-            self.df = pd.read_fit(self.data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
+        self.df = pd.read_csv(self.data, sep='\t', header=None, names=['EKG in mV','Time in ms',])
+        
         # Die Zeitspalte neu starten von 0 bis zum Ende der Daten
         self.df['New Time in ms'] = self.df['Time in ms'] - self.df['Time in ms'].iloc[0]
         # Die Abtastfrequenz berechnen
         self.sample_rate = 1 / (self.df['New Time in ms'].iloc[1] - self.df['New Time in ms'].iloc[0])
 
-
+    
     def find_peaks(self, start = None, end = None):
         '''A function that finds the peaks in the EKG data and returns the R-peaks as an array.'''
         
@@ -471,7 +494,7 @@ if __name__ == "__main__":
     
     ekg_dict = EKGdata.load_by_id(1, 1)
     
-    ekg = EKGdata(ekg_dict)
+    print(EKGdata.get_IDs())
     	
     
 

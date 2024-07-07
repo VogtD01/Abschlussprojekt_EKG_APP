@@ -11,7 +11,7 @@ from PIL import Image
 # Funktion für Seite 3
 def seite3():
 
-    tab1, tab2, tab3 = st.tabs(["Personendaten editieren/ergänzen", "EKG Daten ändern", "Neue Person hinzufügen"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Personendaten editieren/ergänzen", "EKG Daten hinzufügen", "EKG Daten löschen", "Neue Person hinzufügen"])
 
     with tab1:
 
@@ -121,6 +121,10 @@ def seite3():
             st.subheader("Bild ändern")
             image = st.file_uploader("Bild hochladen", type=["jpg", "jpeg", "png"])
             if st.button("Bild ändern"):
+
+                #Löschen des alten Bildes
+                sf.delete_image(person_dict['picture_path'])    
+
                 #Speichern des Bildes
                 path = sf.save_image(image.name, image)
                 person_dict['picture_path'] = path
@@ -186,7 +190,7 @@ def seite3():
 
     with tab2:
 
-        st.title("EKG-Daten editieren/ergänzen")
+        st.title("EKG-Daten hinzufügen")
         # Lade alle Personen
         person_names = read_person_data.get_person_list(read_person_data.load_person_data())
         # Initialisiere Session State, Versuchperson, Bild, EKG-Test
@@ -212,15 +216,94 @@ def seite3():
                 else:
                     st.write("Kein Bild verfügbar")
 
-        st.subheader("EKG-Test hinzufügen")
+        
+        ekg_test = st.file_uploader("EKG-Test hochladen", type=["txt"])
 
+        datum = st.text_input("Datum des EKG-Tests", placeholder="z.B. 23.12.2021")
+        
 
+        if st.button("EKG-Test hinzufügen"):
+                path = sf.save_ekg_data(ekg_test, ekg_test.name)
 
+                new_ekg_test = {
+                "id": person.Person.get_new_id(ekgdata.EKGdata.get_IDs()),
+                "date": datum,
+                "result_link": path
+                }
 
-        st.subheader("EKG-Test löschen")
+                person_dict['ekg_tests'].append(new_ekg_test)
 
+                print(person_dict)
+                read_person_data.update_person_data(person_dict)
 
+                st.write("EKG-Test wurde hinzugefügt")
+                
+                
     with tab3:
+            
+            st.title("EKG-Daten löschen")
+            # Lade alle Personen
+            person_names = read_person_data.get_person_list(read_person_data.load_person_data())
+            # Initialisiere Session State, Versuchperson, Bild, EKG-Test
+            sf.initialize_session_state()
+    
+            
+            col1, col2 = st.columns([1, 2])
+    
+            with col2:
+                st.write("Versuchsperson auswählen")
+                st.session_state.aktuelle_versuchsperson = st.selectbox(
+                    'Versuchsperson',
+                    options=person_names, key="sbVersuchsperson3")
+                
+            with col1:
+                if st.session_state.aktuelle_versuchsperson:
+                    # Finde den Pfad zur Bilddatei
+                    person_dict = read_person_data.find_person_data_by_name(st.session_state.aktuelle_versuchsperson)
+                    st.session_state.picture_path = person_dict["picture_path"]
+                    if st.session_state.picture_path:
+                        image = Image.open(st.session_state.picture_path)
+                        st.image(image, caption=st.session_state.aktuelle_versuchsperson)
+                    else:
+                        st.write("Kein Bild verfügbar")
+    
+            # Öffne EKG-Daten
+            ekgdata_dict = ekgdata.EKGdata.load_by_id(person_dict["id"])
+            
+
+            st.write("## EKG-Daten auswählen")
+            # Für eine Person gibt es ggf. mehrere EKG-Daten. Diese müssen über den Pfad ausgewählt werden können
+            ekg_list = []
+            date_id_mapping = {}
+
+            for ekg in ekgdata_dict:
+                ekg_list.append(ekg["date"])
+                date_id_mapping[ekg["date"]] = ekg["id"]
+
+            # Auswahlbox für EKG-Daten
+            st.session_state.ekg_test_date = st.selectbox(
+                'EKG-Test Datum',
+                options=ekg_list)
+
+            selected_date = st.session_state.ekg_test_date
+            if selected_date != None:
+
+                selected_ekg_id = date_id_mapping[selected_date]
+
+                for ekg in ekgdata_dict:
+                    if ekg["id"] == selected_ekg_id:
+                        link = ekg["result_link"]
+                        
+                
+                if st.button("EKG-Test löschen"):
+                    ekgdata.EKGdata.delete_by_id(person_dict["id"], selected_ekg_id, link)
+                    st.write("EKG-Test wurde gelöscht")             
+
+
+        
+
+
+    with tab4:
         
         st.title("Neue Person hinzufügen")
         st.write("Bitte geben Sie die Daten der neuen Person ein.")
