@@ -146,6 +146,7 @@ class EKGdata:
         # plot the heart rate
         time_ms = self.df['New Time in ms'][peaks]
         time_s = time_ms / 1000
+        #time_min = time_s / 60
         
 
         # create a figure
@@ -153,6 +154,7 @@ class EKGdata:
 
         # add the heart rate to the figure
         fig.add_trace(go.Scatter(
+            #x = time_s, 
             x = time_s, 
             y = heart_rate, 
             mode='lines', 
@@ -463,7 +465,29 @@ class EKGdata:
         max_RT_interval = np.max(RT_interval)
         min_RT_interval = np.min(RT_interval)
         
-        return mean_RT_interval, max_RT_interval, min_RT_interval
+        # Create a time array for plotting
+        time_ms = self.df['New Time in ms'][r_peaks]
+        time_s = time_ms / 1000
+
+        # Plot erstellen
+        fig = go.Figure()
+
+        # RT-Intervalle hinzufügen
+        fig.add_trace(go.Scatter(
+            x = time_s,
+            y = RT_interval,
+            mode = 'lines+markers',
+            name = 'RT Intervall'
+        ))
+
+        # Layout hinzufügen
+        fig.update_layout(
+            title = 'RT-Intervall',
+            xaxis_title = 'Zeit in s',
+            yaxis_title = 'RT-Intervall in ms'
+        )
+
+        return fig, mean_RT_interval, max_RT_interval, min_RT_interval
 
 
 if __name__ == "__main__":
