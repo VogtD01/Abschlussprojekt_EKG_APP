@@ -65,16 +65,14 @@ def seite3():
                     current_value = person_dict[key]
                     if key == "Gender":
                         new_value = option_menu("Geschlecht", placeholder, key=f"option_menu_{key}", styles={
-                            #"container": {"padding": "0!important", "font-size": "12px"},  # Hier kannst du die Schriftgröße der Geschlechtsauswahl ändern
-                            #"nav-link": {"font-size": "12px", "padding": "5px"}  # Hier kannst du die Schriftgröße und die Innenabstände der Optionen ändern
+                            
                         })
                     else:
                         new_value = st.text_input(f"Neuer {field}", value=current_value, placeholder=placeholder)
                 else:
                     if key == "Gender":
                         new_value = option_menu("Geschlecht", placeholder, key=f"option_menu_{key}", styles={
-                            #"container": {"padding": "0!important", "font-size": "12px"},  # Hier kannst du die Schriftgröße der Geschlechtsauswahl ändern
-                            #"nav-link": {"font-size": "12px", "padding": "5px"}  # Hier kannst du die Schriftgröße und die Innenabstände der Optionen ändern
+                            
                         })
                     else:
                         new_value = st.text_input(f"Neuer {field}", placeholder=placeholder)
