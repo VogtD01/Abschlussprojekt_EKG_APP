@@ -66,7 +66,7 @@ def seite4():
         col4.metric(" ", f"{total_calories} kcal", "Kalorien")
 
     # Tabs für Bilder und Plot
-    tab1, tab2, tab3, tap4, tap5, = st.tabs(["Gesamtübersicht", "Hertzfrequenz", "Bild 3", "Bild 4", "Bild 5"])
+    tab1, tab2, tab3= st.tabs(["Gesamtübersicht", "Hertzfrequenz", "Bild 3"])
 
     with tab1:
         if st.session_state.selected_polar_test:
@@ -89,16 +89,7 @@ def seite4():
     with tab3:
         if st.session_state.selected_polar_test:
             current_df_data = polar_data.df_data
-            fig_heartrate, fig_altitude, fig_speed, fig_power = polar_data.plot_polar_curves(current_df_data)
-            st.plotly_chart(fig_speed)
+            #fig_heartrate, fig_altitude, fig_speed, fig_power = polar_data.plot_polar_curves(current_df_data)
+            #st.plotly_chart(fig_speed)
 
-    with tab4:
-        if st.session_state.selected_polar_test:
-            current_df_data = polar_data.df_data
-            fig_heartrate, fig_altitude, fig_speed, fig_power = polar_data.plot_polar_curves(current_df_data)
-            st.plotly_chart(fig_altitude)
-    with tab5:
-        if st.session_state.selected_polar_test:
-            current_df_data = polar_data.df_data
-            fig_heartrate, fig_altitude, fig_speed, fig_power = polar_data.plot_polar_curves(current_df_data)
-            st.plotly_chart(fig_power)
+   
