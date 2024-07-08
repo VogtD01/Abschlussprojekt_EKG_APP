@@ -107,6 +107,29 @@
         "height": 188.0,
         "weight": 78.0,
         "Gender": "m\u00c3\u00a4nnlich",
-        "polar_tests": []
+        "polar_tests": [],
+        "max_hr_individual": 190.0,
+        "heart_rate_zones": {
+            "zone_1": [
+                0.5,
+                0.6
+            ],
+            "zone_2": [
+                0.6,
+                0.7
+            ],
+            "zone_3": [
+                0.7,
+                0.8
+            ],
+            "zone_4": [
+                0.8,
+                0.9
+            ],
+            "zone_5": [
+                0.9,
+                1.0
+            ]
+        }
     }
 ]

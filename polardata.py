@@ -160,41 +160,7 @@ class PolarData:
 
         return formatted_duration, total_distance, average_hr, total_calories
     
-    """def plot_heart_rate_over_time(df):
-        # Daten filtern und auf das Wesentliche reduzieren
-        df = df[["Time", "HR (bpm)"]]
 
-        # Zeit in Sekunden konvertieren
-        df['Time'] = pd.to_numeric(df['Time'].str[:-3].str.replace(':', ''))
-
-        # Streudiagramm mit Streamlit anzeigen
-        st.line_chart(x='Time', y='HR (bpm)', data=df)
-
-        # Alternativ können Sie auch Matplotlib verwenden
-        # fig, ax = plt.subplots()
-        # ax.plot(df['Time'], df['HR (bpm)'])
-        # ax.set_xlabel('Zeit (in Sekunden)')
-        # ax.set_ylabel('Herzfrequenz (in bpm)')
-        # st.pyplot(fig)"""
-
-    """def plot_heart_rate_over_time(self, df):
-        # Daten filtern und auf das Wesentliche reduzieren
-        df = df[["Time", "HR (bpm)"]]
-
-        # Zeit in Sekunden konvertieren
-        df['Time'] = pd.to_numeric(df['Time'].astype(str).str[:-3].str.replace(':', ''))
-
-        # Streudiagramm mit Plotly anzeigen
-        fig = px.line(df, x='Time', y='HR (bpm)', title='Herzfrequenz über Zeit')
-
-        # Formatierung
-        fig.update_layout(
-            title="Herzfrequenz über Zeit",
-            xaxis_title="Zeit (in Sekunden)",
-            yaxis_title="Herzfrequenz (in bpm)"
-        )
-
-        return fig"""
     
     @staticmethod
     def create_heartrate_curve(df, fs=1):
@@ -223,8 +189,62 @@ class PolarData:
         power = df["Power (W)"]
         
         return pd.DataFrame({"Time": time / 60, "Power": power})
+    ######################################
     
+    def plot_heart_rate_with_zones(df, fs=1, max_heart_rate=200):
+        df_heartrate = PolarData.create_heartrate_curve(df, fs)
+        
+        # Wenn max_heart_rate nicht angegeben ist, bestimme sie aus den Daten
+        if max_heart_rate is None:
+            max_heart_rate = np.max(df_heartrate['Heart Rate'])
+        
+        fig = px.line(df_heartrate, x='Time', y='Heart Rate', title='Herzfrequenz über Zeit')
+        fig.update_layout(
+            xaxis_title="Zeit (in Minuten)",
+            yaxis_title="Herzfrequenz (in bpm)"
+        )
+        
+        # Herzfrequenz-Zonen hinzufügen
+        PolarData.add_heart_rate_zones(fig, df_heartrate['Time'], max_heart_rate)
+        
+        return fig
 
+    def add_heart_rate_zones(fig, time_data, max_heart_rate):
+        heart_rate_zones = [
+            (0.5, 'Gray', 'Zone 1'),
+            (0.6, 'Green', 'Zone 2'),
+            (0.7, 'Yellow', 'Zone 3'),
+            (0.8, 'Orange', 'Zone 4'),
+            (0.9, 'Red', 'Zone 5')
+        ]
+
+        # Hinzufügen der Herzfrequenz-Zonen als Rechtecke
+        for threshold, color, label in heart_rate_zones:
+            fig.add_shape(
+                type="rect",
+                x0=time_data.iloc[0],
+                y0=max_heart_rate * threshold,
+                x1=time_data.iloc[-1],
+                y1=max_heart_rate * (threshold + 0.1),
+                line=dict(color=color, width=2),
+                fillcolor=color,
+                opacity=0.5,
+                layer="below"
+            )
+
+            # Legende für Herzfrequenz-Zonen hinzufügen
+            fig.add_trace(go.Scatter(
+                x=[None],
+                y=[None],
+                mode='markers',
+                marker=dict(
+                    color=color,
+                    size=10
+                ),
+                name=label
+            ))
+
+##########################################
     def plot_polar_curves(df, fs=1):
         df_heartrate = PolarData.create_heartrate_curve(df, fs)
         df_altitude = PolarData.create_altitude_curve(df, fs)
@@ -260,6 +280,13 @@ class PolarData:
         )
 
         return fig_heartrate, fig_altitude, fig_speed, fig_power
+    
+    #plotten einer herzfrequenzkurve mit den herzfrequenzonen
+    def plot_heartrate_with_zones(df, fs=1):
+        df_heartrate = PolarData.create_heartrate_curve(df, fs)
+        df_heartrate_zones = PolarData.create_heartrate_zones(df, fs)
+        
+        
 
 
     

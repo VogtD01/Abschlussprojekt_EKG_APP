@@ -35,8 +35,7 @@ print(modified_df)
 
 fig_heartrate, fig_altitude, fig_speed, fig_power = PolarData.plot_polar_curves(df)
 fig1 = PolarData.plot_polar_curves_together(df)
-
-
+fig2 = PolarData.plot_heart_rate_over_time(df)
 
 #fig_heartrate.show()
 #fig_altitude.show()
@@ -44,6 +43,7 @@ fig1 = PolarData.plot_polar_curves_together(df)
 #fig_power.show()
 
 fig1.show()
+fig2.show()
 
 
 
