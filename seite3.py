@@ -14,11 +14,9 @@ def seite3():
     tab1, tab2, tab3, tab4 = st.tabs([
         "Personendaten editieren/ergänzen", "Daten hinzufügen", "Daten löschen", "Neue Person hinzufügen"])
 
-    with tab1:
-        #st.title("Personendaten editieren/ergänzen")
-        st.markdown("<h1 style='color: white;'>Personendaten editieren/ergänzen</h1>", unsafe_allow_html=True)
 
-        
+    with tab1:
+        st.markdown("<h1 style='color: white;'>Personendaten editieren/ergänzen</h1>", unsafe_allow_html=True)
 
         # Lade alle Personen
         person_names = read_person_data.get_person_list(read_person_data.load_person_data())
@@ -28,23 +26,21 @@ def seite3():
         col1, col2 = st.columns([1, 2])
         with col2:
             st.write("Versuchsperson auswählen")
-            st.session_state.aktuelle_versuchsperson = st.selectbox(
-                'Versuchsperson', options=person_names, key="sbVersuchsperson")
-        
-        with col1:
-            if st.session_state.aktuelle_versuchsperson:
-                person_dict = read_person_data.find_person_data_by_name(
-                    st.session_state.aktuelle_versuchsperson)
-                st.session_state.picture_path = person_dict.get("picture_path", "")
-                if st.session_state.picture_path:
-                    image = Image.open(st.session_state.picture_path)
-                    st.image(image, caption=st.session_state.aktuelle_versuchsperson)
-                else:
-                    st.write("Kein Bild verfügbar")
+            selected_person = st.selectbox('Versuchsperson', options=person_names, key="sbVersuchsperson")
+            st.session_state.aktuelle_versuchsperson = selected_person
 
-        
+        if selected_person:
+            person_dict = read_person_data.find_person_data_by_name(selected_person)
+            st.session_state.picture_path = person_dict.get("picture_path", "")
+
+        with col1:
+            if st.session_state.picture_path:
+                image = Image.open(st.session_state.picture_path)
+                st.image(image, caption=selected_person)
+            else:
+                st.write("Kein Bild verfügbar")
+
         st.markdown("<h3 style='color: white;'>Daten ändern</h3>", unsafe_allow_html=True)
-        
 
         # Definiere die Felder
         fields = [
@@ -62,32 +58,20 @@ def seite3():
             with col1:
                 st.markdown(f"**{field}**")
             with col2:
-                if key in person_dict:
-                    current_value = person_dict[key]
-                    if key == "Gender":
-                        new_value = option_menu("Geschlecht", placeholder, key=f"option_menu_{key}", styles={
-                            
-                        })
-                    else:
-                        new_value = st.text_input(f"Neuer {field}", value=current_value, placeholder=placeholder)
+                current_value = person_dict.get(key, "")
+                if key == "Gender":
+                    try:
+                        new_value = st.selectbox(f"Neuer {field}", options=placeholder, index=placeholder.index(current_value) if current_value in placeholder else 0)
+                    except ValueError:
+                        st.warning(f"Der gespeicherte Wert '{current_value}' für {field} ist nicht in der Liste der gültigen Optionen.")
+                        new_value = st.selectbox(f"Neuer {field}", options=placeholder)
                 else:
-                    if key == "Gender":
-                        new_value = option_menu("Geschlecht", placeholder, key=f"option_menu_{key}", styles={
-                            
-                        })
-                    else:
-                        new_value = st.text_input(f"Neuer {field}", placeholder=placeholder)
+                    new_value = st.text_input(f"Neuer {field}", value=current_value, placeholder=placeholder)
             with col3:
-                if key in person_dict:
-                    if st.button(f"ändern", key=f"btn_{key}_change"):
-                        person_dict[key] = new_value
-                        read_person_data.update_person_data(person_dict)
-                        st.write(f"{field} wurde geändert")
-                else:
-                    if st.button(f"hinzufügen", key=f"btn_{key}_add"):
-                        person_dict[key] = new_value
-                        read_person_data.update_person_data(person_dict)
-                        st.write(f"{field} wurde hinzugefügt")
+                if st.button(f"ändern", key=f"btn_{key}_change"):
+                    person_dict[key] = new_value
+                    read_person_data.update_person_data(person_dict)
+                    st.write(f"{field} wurde geändert")
 
         # Bild ändern
         col1, col2, col3 = st.columns([1, 2, 1])
@@ -96,22 +80,128 @@ def seite3():
         with col2:
             image = st.file_uploader("Bild hochladen", type=["jpg", "jpeg", "png"])
         with col3:
-            if st.session_state.picture_path:
-                if st.button("ändern", key="btn_picture_change"):
+            if st.button("ändern", key="btn_picture_change"):
+                if "picture_path" in person_dict:
                     sf.delete_image(person_dict['picture_path'])
+                if image is not None:
                     path = sf.save_image(image.name, image)
                     person_dict['picture_path'] = path
                     read_person_data.update_person_data(person_dict)
                     st.write("Bild wurde geändert")
+
+
+        ##################################################
+
+        # Herzfrequenzzonen hinzufügen
+        st.markdown("<h3 style='color: white;'>Herzfrequenzzonen ändern</h3>", unsafe_allow_html=True)
+
+        # Initialisiere maximale Herzfrequenz
+        max_hr = st.number_input("Maximale Herzfrequenz (bpm)", value=float(person_dict.get("max_hr_individual", 200)), step=1.0)
+
+        # Definiere Standardzonen als Prozentsätze
+        default_zones = {
+            "zone_1": (0.50, 0.60),
+            "zone_2": (0.60, 0.70),
+            "zone_3": (0.70, 0.80),
+            "zone_4": (0.80, 0.90),
+            "zone_5": (0.90, 1.00)
+        }
+
+        # Überprüfen, ob ein Benutzerwechsel stattgefunden hat und entsprechend die Zonen zurücksetzen
+        if "last_selected_user" not in st.session_state:
+            st.session_state.last_selected_user = None
+
+        # Benutzerwechsel erkennen
+        if st.session_state.last_selected_user != st.session_state.aktuelle_versuchsperson:
+            st.session_state.last_selected_user = st.session_state.aktuelle_versuchsperson
+            # Zonen auf Standardwerte setzen, wenn der Benutzer keine individuellen Zonen hat
+            if "heart_rate_zones" not in person_dict or not person_dict["heart_rate_zones"]:
+                person_dict["heart_rate_zones"] = default_zones
+
+        # Hole die gespeicherten Zonen oder setze die Standardwerte
+        person_zones = person_dict.get("heart_rate_zones", default_zones)
+
+        # Berechne die bpm-Werte für die Zonen
+        zone_bpm_values = {}
+        for zone, (default_min, default_max) in default_zones.items():
+            if zone in person_zones:
+                min_bpm = person_zones[zone][0] * max_hr
+                max_bpm = person_zones[zone][1] * max_hr
             else:
-                if st.button("hinzufügen", key="btn_picture_add"):
-                    path = sf.save_image(image.name, image)
-                    person_dict['picture_path'] = path
-                    read_person_data.update_person_data(person_dict)
-                    st.write("Bild wurde hinzugefügt")
+                min_bpm = default_min * max_hr
+                max_bpm = default_max * max_hr
+            zone_bpm_values[zone] = (min_bpm, max_bpm)
 
+        # Eingabefelder für die Zonen
+        col1, col2 = st.columns(2)
+        previous_max_bpm = 0
+        for i, (zone, (min_bpm, max_bpm)) in enumerate(zone_bpm_values.items()):
+            if i > 0:
+                min_bpm = previous_max_bpm  # Das Ende der vorherigen Zone ist der Anfang der aktuellen Zone
+            
+            with col1:
+                st.markdown(f"**{zone.replace('_', ' ').title()} Min (bpm)**")
+                min_bpm = st.number_input(f"{zone}_min", value=float(min_bpm), step=1.0, key=f"{zone}_min_input", format="%.0f")
+            with col2:
+                st.markdown(f"**{zone.replace('_', ' ').title()} Max (bpm)**")
+                max_bpm = st.number_input(f"{zone}_max", value=float(max_bpm), step=1.0, key=f"{zone}_max_input", format="%.0f")
+            
+            zone_bpm_values[zone] = (min_bpm, max_bpm)
+            previous_max_bpm = max_bpm
 
-    
+        # Speichern und Zurücksetzen der Zonen
+        col1, col2, col3 = st.columns([1, 1, 2])
+        with col1:
+            if st.button("Speichern"):
+                # Speichern der maximalen Herzfrequenz
+                person_dict["max_hr_individual"] = max_hr
+                
+                # Umwandeln der bpm-Werte in Prozent der maxHR
+                person_zones_percent = {zone: (min_bpm / max_hr, max_bpm / max_hr) for zone, (min_bpm, max_bpm) in zone_bpm_values.items()}
+                person_dict["heart_rate_zones"] = person_zones_percent
+                read_person_data.update_person_data(person_dict)
+                st.write("Herzfrequenzzonen wurden gespeichert")
+
+        with col2:
+            if st.button("Zonen zurücksetzen"):
+                # Löschen der Herzfrequenzzonen
+                person_dict.pop("heart_rate_zones", None)
+                # Löschen der maximalen Herzfrequenz
+                person_dict.pop("max_hr_individual", None)
+                read_person_data.update_person_data(person_dict)
+                st.write("Herzfrequenzzonen wurden zurückgesetzt")
+                st.write("bitte nochmal drücken, um die Änderungen zu übernehmen")
+
+        with col3:
+            # Info-Box
+            if "show_zone_info" not in st.session_state:
+                st.session_state.show_zone_info = False
+
+            if st.button("Info zu individuellen Herzfrequenz-Zonen"):
+                st.session_state.show_zone_info = not st.session_state.show_zone_info
+
+        if st.session_state.show_zone_info:
+            st.write("""
+                **Nutzen von individuellen Herzfrequenz-Zonen**
+
+                *Ihre individuellen Herzfrequenz-Zonen sind maßgeschneidert auf Ihre persönlichen Fähigkeiten und Trainingsziele. Diese Zonen spiegeln Ihren Fitness-Level und Ihre aktuelle körperliche Leistungsfähigkeit wider und helfen Ihnen, Ihr Training besser zu steuern und zu optimieren.
+
+                **Warum sind individuelle Zonen wichtig?**
+
+                Individuelle Zonen sind wichtig, da jeder Athlet einzigartige physiologische Merkmale aufweist, die seine individuellen Trainingsbereiche beeinflussen. Durch die Angabe Ihrer persönlichen Zonen können Sie sicherstellen, dass das Training auf Ihre spezifischen Bedürfnisse und Ziele zugeschnitten ist.
+
+                **Was bringt es Ihnen?**
+
+                * Verbesserung der Trainingsgenauigkeit: Individuelle Zonen helfen Ihnen, Ihre Intensität während des Trainings besser zu kontrollieren und die Effektivität Ihrer Trainingssitzungen zu maximieren.
+                * Vermeidung von Übertraining: Individuelle Zonen können Sie dabei unterstützen, sich nicht zu sehr anzustrengen und Ihren Körper Schaden zuzufügen.
+                * Anpassung an Ihre Trainingsziele: Individuelle Zonen ermöglichen es Ihnen, Ihr Training besser auf spezifische Ziele wie Ausdauer, Kraft oder Fettverbrennung auszurichten.
+
+                **Wie können Sie Ihre persönlichen Zonen festlegen?**
+
+                Um Ihre persönlichen Zonen zu bestimmen, müssen Sie Ihre maximalen und minimalen Herzfrequenzen sowie Ihre aerobe und anaerobe Schwelle kennen. Diese Werte können mit Hilfe von Leistungstests oder durch Arbeit mit einem Trainingsprofi ermittelt werden.
+            """)
+
+    ###########################################################################
     with tab2:
         #st.markdown("<h1 style='color: white; font-size: 24px;'>EKG/Polar-Daten hinzufügen</h1>", unsafe_allow_html=True)
         st.markdown("<h1 style='color: white;'>EKG/Polar-Daten hinzufügen</h1>", unsafe_allow_html=True)

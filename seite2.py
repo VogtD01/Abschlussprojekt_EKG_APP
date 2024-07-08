@@ -187,6 +187,7 @@ def seite2():
             if st.checkbox("T-Peaks anzeigen", False):
                 t_peaks = True
 
+
             # EKG-Daten als Plot anzeigen
             fig = current_ekg_data_class.plot_time_series(start, end, peaks, t_peaks)
             st.plotly_chart(fig)
