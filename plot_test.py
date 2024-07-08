@@ -43,8 +43,8 @@ fig2 = PolarData.plot_heart_rate_with_zones(df)
 #fig_speed.show()
 #fig_power.show()
 
-#fig1.show()
-#fig2.show()
+fig1.show()
+fig2.show()
 #fig3.show()
 
 person_id = 6  # Beispiel-Personen-ID

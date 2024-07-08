@@ -151,7 +151,7 @@ class PolarData:
                 if "heart_rate_zones" in entry:
                     # Convert heart rate zones dictionary to a list of thresholds
                     zones = entry["heart_rate_zones"]
-                    thresholds = [zones[zone][1] for zone in sorted(zones.keys())]
+                    thresholds = [zones[zone][0] for zone in sorted(zones.keys())]
                     return thresholds
         
         # Return empty list if person ID is not found or heart rate zones are missing
@@ -201,7 +201,10 @@ class PolarData:
 
         return formatted_duration, total_distance, average_hr, total_calories
     
-
+    @staticmethod
+    def get_df_data(self):
+        return self.df_data
+    
     
     @staticmethod
     def create_heartrate_curve(df, fs=1):
@@ -250,20 +253,21 @@ class PolarData:
         
         return fig
 
+    @staticmethod
     def add_heart_rate_zones(fig, time_data, max_heart_rate, zone_thresholds):
         heart_rate_zones = [
-            (threshold, PolarData.get_zone_color(index), f'Zone {index+1}')
-            for index, threshold in enumerate(zone_thresholds)
+            (zone_thresholds[i], zone_thresholds[i+1] if i+1 < len(zone_thresholds) else 1.0, PolarData.get_zone_color(i), f'Zone {i+1}')
+            for i in range(len(zone_thresholds))
         ]
 
         # Hinzufügen der Herzfrequenz-Zonen als Rechtecke
-        for threshold, color, label in heart_rate_zones:
+        for y0_threshold, y1_threshold, color, label in heart_rate_zones:
             fig.add_shape(
                 type="rect",
                 x0=time_data.iloc[0],
-                y0=max_heart_rate * threshold,
+                y0=max_heart_rate * y0_threshold,
                 x1=time_data.iloc[-1],
-                y1=max_heart_rate * (threshold + 0.1),
+                y1=max_heart_rate * y1_threshold,
                 line=dict(color=color, width=2),
                 fillcolor=color,
                 opacity=0.5,
@@ -282,6 +286,7 @@ class PolarData:
                 name=label
             ))
 
+    @staticmethod
     def get_zone_color(index):
         # Definiere hier die Farben für die Zonen
         zone_colors = ['Gray', 'Green', 'Yellow', 'Orange', 'Red']
@@ -289,6 +294,7 @@ class PolarData:
             return zone_colors[index]
         else:
             return 'Blue'  # Fallback-Farbe, falls mehr Zonen definiert sind als Farben
+
 
 ##########################################
     def plot_polar_curves(df, fs=1):

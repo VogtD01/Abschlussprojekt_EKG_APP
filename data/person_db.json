@@ -44,7 +44,30 @@
                 "summary_link": "data/polar_data\\Dominic_Vogt_2024-04-17_14-23-52_summary.csv",
                 "data_link": "data/polar_data\\Dominic_Vogt_2024-04-17_14-23-52_data.csv"
             }
-        ]
+        ],
+        "max_hr_individual": 180.0,
+        "heart_rate_zones": {
+            "zone_1": [
+                0.5,
+                0.6
+            ],
+            "zone_2": [
+                0.6,
+                0.7
+            ],
+            "zone_3": [
+                0.7,
+                0.8
+            ],
+            "zone_4": [
+                0.8,
+                0.9
+            ],
+            "zone_5": [
+                0.9,
+                1.0
+            ]
+        }
     },
     {
         "id": 2,
@@ -108,14 +131,14 @@
         "weight": 78.0,
         "Gender": "m\u00c3\u00a4nnlich",
         "polar_tests": [],
-        "max_hr_individual": 190.0,
+        "max_hr_individual": 170.0,
         "heart_rate_zones": {
             "zone_1": [
                 0.3,
                 0.4
             ],
             "zone_2": [
-                0.6,
+                0.4,
                 0.7
             ],
             "zone_3": [
