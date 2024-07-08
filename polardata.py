@@ -72,7 +72,7 @@ class PolarData:
             print("Fehler beim Dekodieren der JSON-Datei")
         return ids
 
-    @staticmethod
+    """@staticmethod
     def delete_by_id(PersonID, PolarID, link):
         '''A function that deletes the Polar test data by id.'''
         
@@ -94,6 +94,43 @@ class PolarData:
             print(f"Die Datei {link} wurde nicht gefunden.")
         except Exception as e:
             print(f"Fehler beim Löschen der Datei {link}: {e}")
+            return
+        
+        # Find the Polar test data and delete it
+        for eintrag in person_data:
+            if eintrag["id"] == PersonID:
+                if 'polar_tests' in eintrag:
+                    for polar_test in eintrag["polar_tests"]:
+                        if polar_test["id"] == PolarID:
+                            eintrag["polar_tests"].remove(polar_test)
+                            break
+        
+        # Save the updated person data back to the file
+        with open("data/person_db.json", "w") as file:
+            json.dump(person_data, file, indent=4)"""
+    
+    def delete_by_id(PersonID, PolarID, summary_link, data_link):
+        '''A function that deletes the Polar test data by id.'''
+        
+        # Load the person data
+        try:
+            with open('data/person_db.json', 'r') as file:
+                person_data = json.load(file)
+        except FileNotFoundError:
+            print("Datei nicht gefunden")
+            return
+        except json.JSONDecodeError:
+            print("Fehler beim Dekodieren der JSON-Datei")
+            return
+        
+        # Remove the files associated with the links
+        try:
+            os.remove(summary_link)
+            os.remove(data_link)
+        except FileNotFoundError:
+            print(f"Die Datei wurde nicht gefunden.")
+        except Exception as e:
+            print(f"Fehler beim Löschen der Datei: {e}")
             return
         
         # Find the Polar test data and delete it

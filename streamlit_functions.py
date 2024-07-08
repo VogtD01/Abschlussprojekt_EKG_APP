@@ -4,6 +4,7 @@ from PIL import Image
 import pandas as pd
 
 import streamlit as st
+from io import StringIO
 
 # Beispielpersonen
 person_names = ["Person 1", "Person 2", "Person 3"]
@@ -182,7 +183,7 @@ def save_ekg_data(ekg_data, file_name):
 
     return completeName
 
-def save_polar_data(polar_data, file_name):
+"""def save_polar_data(polar_data, file_name):
     '''Speichert die Polar-Daten im Ordner data ab.'''
 
     folder_name = 'data/polar_data'
@@ -196,8 +197,61 @@ def save_polar_data(polar_data, file_name):
     df.to_csv(completeName, index=False)
     
     
-    return completeName
+    return completeName"""
+
+
+def save_polar_data(polar_data_path, file_name):
+    '''Speichert die Polar-Daten im Ordner data ab und gibt die Pfade für die Zusammenfassungs- und Zeitreihendaten zurück.'''
+    
+    folder_name = 'data/polar_data'
+    base_name = os.path.splitext(file_name)[0]  # Basisname ohne Erweiterung
+    
+    # Dateinamen für Zusammenfassungs- und Zeitreihendaten erstellen
+    summary_file_name = f"{base_name}_summary.csv"
+    data_file_name = f"{base_name}_data.csv"
+    
+    # Vollständige Pfade für Zusammenfassungs- und Zeitreihendaten erstellen
+    summary_path = os.path.join(folder_name, summary_file_name)
+    data_path = os.path.join(folder_name, data_file_name)
+
+    # Liste für Zusammenfassungs- und Zeitreihendaten
+    summary_lines = []
+    data_lines = []
+
+    # Daten aus der CSV-Datei lesen und aufteilen
+    with open(polar_data_path, 'r') as file:
+        lines = file.readlines()
         
+    is_summary = True
+    for line in lines:
+        if is_summary:
+            if line.strip() == 'Sample rate,Time,HR (bpm),Speed (km/h),Pace (min/km),Cadence,Altitude (m),Stride length (m),Distances (m),Temperatures (C),Power (W),':
+                is_summary = False
+                data_lines.append(line)
+            else:
+                summary_lines.append(line)
+        else:
+            data_lines.append(line)
+
+    # Daten in DataFrames konvertieren
+    summary_data = pd.read_csv(StringIO(''.join(summary_lines)))
+    data_data = pd.read_csv(StringIO(''.join(data_lines)))
+
+    # Daten in CSV-Dateien speichern
+    summary_data.to_csv(summary_path, index=False)
+    data_data.to_csv(data_path, index=False)
+
+    return summary_path, data_path
+
+if "name" == "__main__":
+
+    # Beispielaufruf
+    summary_path, data_path = save_polar_data('polar_data/1.CSV', 'output_file.csv')
+
+    # Ausgabe der Pfade
+    print("Pfad der Zusammenfassungsdaten:", summary_path)
+    print("Pfad der Zeitreihendaten:", data_path)
+
 
     
 
