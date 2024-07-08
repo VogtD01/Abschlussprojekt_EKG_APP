@@ -137,6 +137,47 @@ class PolarData:
         with open("data/person_db.json", "w") as file:
             json.dump(person_data, file, indent=4)
 
+    @staticmethod
+    def load_heart_rate_zones_by_id(person_id):
+        '''A function that loads the Heart Rate Zones by person ID and returns the zones as a list of thresholds.'''
+        
+        # Load the person data from JSON file
+        with open("data/person_db.json") as file:
+            person_data = json.load(file)
+        
+        # Search for the person by ID and retrieve heart rate zones if found
+        for entry in person_data:
+            if entry["id"] == person_id:
+                if "heart_rate_zones" in entry:
+                    # Convert heart rate zones dictionary to a list of thresholds
+                    zones = entry["heart_rate_zones"]
+                    thresholds = [zones[zone][1] for zone in sorted(zones.keys())]
+                    return thresholds
+        
+        # Return empty list if person ID is not found or heart rate zones are missing
+        return []
+    
+    @staticmethod
+    def load_max_hr_individual_by_id(person_id):
+        '''A function that loads the max_hr_individual by person ID and returns it.'''
+        
+        # Load the person data from JSON file
+        with open("data/person_db.json") as file:
+            person_data = json.load(file)
+        
+        # Search for the person by ID and retrieve max_hr_individual if found
+        for entry in person_data:
+            if entry["id"] == person_id:
+                if "max_hr_individual" in entry:
+                    return entry["max_hr_individual"]
+                else:
+                    return None
+        
+        # Return None if person ID is not found or max_hr_individual is missing
+        return None
+
+
+
     
     def calculate_summary_stats(self):
         # Gesamtzeit berechnen
@@ -191,7 +232,7 @@ class PolarData:
         return pd.DataFrame({"Time": time / 60, "Power": power})
     ######################################
     
-    def plot_heart_rate_with_zones(df, fs=1, max_heart_rate=200):
+    def plot_heart_rate_with_zones(df, fs=1, max_heart_rate=200, zone_thresholds=[0.5, 0.6, 0.7, 0.8, 0.9]):
         df_heartrate = PolarData.create_heartrate_curve(df, fs)
         
         # Wenn max_heart_rate nicht angegeben ist, bestimme sie aus den Daten
@@ -205,17 +246,14 @@ class PolarData:
         )
         
         # Herzfrequenz-Zonen hinzufügen
-        PolarData.add_heart_rate_zones(fig, df_heartrate['Time'], max_heart_rate)
+        PolarData.add_heart_rate_zones(fig, df_heartrate['Time'], max_heart_rate, zone_thresholds)
         
         return fig
 
-    def add_heart_rate_zones(fig, time_data, max_heart_rate):
+    def add_heart_rate_zones(fig, time_data, max_heart_rate, zone_thresholds):
         heart_rate_zones = [
-            (0.5, 'Gray', 'Zone 1'),
-            (0.6, 'Green', 'Zone 2'),
-            (0.7, 'Yellow', 'Zone 3'),
-            (0.8, 'Orange', 'Zone 4'),
-            (0.9, 'Red', 'Zone 5')
+            (threshold, PolarData.get_zone_color(index), f'Zone {index+1}')
+            for index, threshold in enumerate(zone_thresholds)
         ]
 
         # Hinzufügen der Herzfrequenz-Zonen als Rechtecke
@@ -243,6 +281,14 @@ class PolarData:
                 ),
                 name=label
             ))
+
+    def get_zone_color(index):
+        # Definiere hier die Farben für die Zonen
+        zone_colors = ['Gray', 'Green', 'Yellow', 'Orange', 'Red']
+        if index < len(zone_colors):
+            return zone_colors[index]
+        else:
+            return 'Blue'  # Fallback-Farbe, falls mehr Zonen definiert sind als Farben
 
 ##########################################
     def plot_polar_curves(df, fs=1):
@@ -281,13 +327,6 @@ class PolarData:
 
         return fig_heartrate, fig_altitude, fig_speed, fig_power
     
-    #plotten einer herzfrequenzkurve mit den herzfrequenzonen
-    def plot_heartrate_with_zones(df, fs=1):
-        df_heartrate = PolarData.create_heartrate_curve(df, fs)
-        df_heartrate_zones = PolarData.create_heartrate_zones(df, fs)
-        
-        
-
 
     
     @staticmethod
@@ -358,8 +397,70 @@ class PolarData:
     
 
 ############################################
-   
+    # Ist ein bisher gescheiterter Versuch, die Zonen in die Grafik zu integrieren
+    @staticmethod
+    def plot_polar_curves_together_with_zones(df, fs=1, max_heart_rate=200, zone_thresholds=[0.5, 0.6, 0.7, 0.8, 0.9]):
+        df_speed = PolarData.create_speed_curve(df, fs)
+        df_altitude = PolarData.create_altitude_curve(df, fs)
+        df_power = PolarData.create_power_curve_overtime(df, fs)
 
+        fig = make_subplots(
+            rows=4, cols=1, 
+            shared_xaxes=True, 
+            vertical_spacing=0.1,
+            subplot_titles=(
+                "Herzfrequenz über Zeit mit Zonen",
+                "Geschwindigkeit über Zeit",
+                "Leistung über Zeit",
+                "Höhe über Zeit"
+            )
+        )
+
+        # Plot für Herzfrequenz mit Zonen ersetzen
+        fig.add_trace(
+            PolarData.plot_heart_rate_with_zones(df, fs, max_heart_rate, zone_thresholds),
+            row=1, col=1
+        )
+
+        fig.add_trace(
+            go.Scatter(x=df_speed['Time'], y=df_speed['Speed'], name="Geschwindigkeit", line=dict(color='blue'),
+                    hoverinfo='x+y', mode='lines'),
+            row=2, col=1
+        )
+        
+        fig.add_trace(
+            go.Scatter(x=df_power['Time'], y=df_power['Power'], name="Leistung", line=dict(color='green'),
+                    hoverinfo='x+y', mode='lines'),
+            row=3, col=1
+        )
+        
+        fig.add_trace(
+            go.Scatter(x=df_altitude['Time'], y=df_altitude['Altitude'], name="Höhe", line=dict(color='orange'),
+                    hoverinfo='x+y', mode='lines'),
+            row=4, col=1
+        )
+
+        fig.update_layout(
+            height=900, 
+            title_text="",
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=-0.3,
+                xanchor="right",
+                x=1
+            ),
+            hovermode='x'
+        )
+
+        fig.update_xaxes(title_text="Zeit (in Minuten)", row=4, col=1)
+        fig.update_yaxes(title_text="Herzfrequenz (in bpm)", row=1, col=1)
+        fig.update_yaxes(title_text="Geschwindigkeit (in km/h)", row=2, col=1)
+        fig.update_yaxes(title_text="Leistung (in Watt)", row=3, col=1)
+        fig.update_yaxes(title_text="Höhe (in Metern)", row=4, col=1)
+
+        return fig
 
 #################################################################################################
 
@@ -427,4 +528,20 @@ if __name__ == "__main__":
     fig1.show()
     fig2.show()"""
 
-  
+    if __name__ == "__main__":
+        person_id = 6  # Beispiel-Personen-ID
+        zone_thresholds = PolarData.load_heart_rate_zones_by_id(person_id)
+        if zone_thresholds:
+            print(f"Heart Rate Zone Thresholds for Person with ID {person_id}: {zone_thresholds}")
+        else:
+            print(f"No Heart Rate Zones found for Person with ID {person_id}")
+
+        max_hr = PolarData.load_max_hr_individual_by_id(person_id)
+        if max_hr is not None:
+            print(f"Max HR Individual for Person with ID {person_id}: {max_hr}")
+        else:
+            print(f"No Max HR Individual found for Person with ID {person_id}")
+
+        #tsten der plorheartratewithzones
+
+        

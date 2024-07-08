@@ -35,15 +35,25 @@ print(modified_df)
 
 fig_heartrate, fig_altitude, fig_speed, fig_power = PolarData.plot_polar_curves(df)
 fig1 = PolarData.plot_polar_curves_together(df)
-fig2 = PolarData.plot_heart_rate_over_time(df)
+fig2 = PolarData.plot_heart_rate_with_zones(df)
+#fig3 = PolarData.plot_polar_curves_together_with_zones(df, fs=1, max_heart_rate=200, zone_thresholds=[0.5, 0.6, 0.7, 0.8, 0.9])
 
 #fig_heartrate.show()
 #fig_altitude.show()
 #fig_speed.show()
 #fig_power.show()
 
-fig1.show()
-fig2.show()
+#fig1.show()
+#fig2.show()
+#fig3.show()
 
+person_id = 6  # Beispiel-Personen-ID
+maxHR = PolarData.load_max_hr_individual_by_id(person_id)
+zones_thresholds = PolarData.load_heart_rate_zones_by_id(person_id)
+print(maxHR)
+print(zones_thresholds)
 
+fig4 = PolarData.plot_heart_rate_with_zones(df, 1, maxHR, zones_thresholds)
+fig4.show()
+#plot_heart_rate_with_zones(df, fs=1, max_heart_rate=200, zone_thresholds=[0.5, 0.6, 0.7, 0.8, 0.9]):
 
