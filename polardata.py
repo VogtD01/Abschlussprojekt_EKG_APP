@@ -3,6 +3,7 @@ import plotly.express as px
 import numpy as np
 import json
 import os
+import streamlit_functions as sf
 
 
 ##############################
@@ -10,19 +11,14 @@ import os
 class PolarData:
 
     """def __init__(self, polar_dict):
-        '''A class that represents the Polar Data.'''
-        
         self.id = polar_dict["id"]
         self.date = polar_dict["date"]
-        self.time = polar_dict["time"]
-        self.duration = polar_dict["duration"]
-        self.distance = polar_dict["distance"]
-        self.calories = polar_dict["calories"]
-        self.avg_heart_rate = polar_dict["avg_heart_rate"]
-        self.max_heart_rate = polar_dict["max_heart_rate"]
-        self.training_load = polar_dict["training_load"]
-        self.training_effect = polar_dict["training_effect"]
-        self.link = polar_dict["link"]"""
+        self.data_link = polar_dict["data_link"]
+        self.summary_link = polar_dict["summary_link"]
+
+        self.df_data, self.df_summary = sf.save_polar_data(self.data_link, self.summary_link)"""
+
+
 
     @staticmethod
     def load_by_id(PersonID, PolarID=None):
@@ -72,42 +68,6 @@ class PolarData:
             print("Fehler beim Dekodieren der JSON-Datei")
         return ids
 
-    """@staticmethod
-    def delete_by_id(PersonID, PolarID, link):
-        '''A function that deletes the Polar test data by id.'''
-        
-        # Load the person data
-        try:
-            with open('data/person_db.json', 'r') as file:
-                person_data = json.load(file)
-        except FileNotFoundError:
-            print("Datei nicht gefunden")
-            return
-        except json.JSONDecodeError:
-            print("Fehler beim Dekodieren der JSON-Datei")
-            return
-        
-        # Remove the file associated with the link
-        try:
-            os.remove(link)
-        except FileNotFoundError:
-            print(f"Die Datei {link} wurde nicht gefunden.")
-        except Exception as e:
-            print(f"Fehler beim Löschen der Datei {link}: {e}")
-            return
-        
-        # Find the Polar test data and delete it
-        for eintrag in person_data:
-            if eintrag["id"] == PersonID:
-                if 'polar_tests' in eintrag:
-                    for polar_test in eintrag["polar_tests"]:
-                        if polar_test["id"] == PolarID:
-                            eintrag["polar_tests"].remove(polar_test)
-                            break
-        
-        # Save the updated person data back to the file
-        with open("data/person_db.json", "w") as file:
-            json.dump(person_data, file, indent=4)"""
     
     def delete_by_id(PersonID, PolarID, summary_link, data_link):
         '''A function that deletes the Polar test data by id.'''
@@ -147,10 +107,36 @@ class PolarData:
             json.dump(person_data, file, indent=4)
 
 
+    ################################################################################
 
-#####################
+    def calculate_summary_stats(self):
+        # Gesamtzeit berechnen
+        total_duration = pd.to_timedelta(self['Duration']).sum()
+        
+        # Gesamtdistanz berechnen
+        total_distance = self['Total distance (km)'].sum()
+        
+        # Durchschnittlichen Puls berechnen
+        average_hr = self['Average heart rate (bpm)'].mean()
+        
+        # Verbrannte Kalorien berechnen
+        total_calories = self['Calories'].sum()
+        
+        return total_duration, total_distance, average_hr, total_calories
 
-def read_activity_csv_polar(path="data/polar_data/Dominic_Vogt_2024-05-18_16-02-30.CSV"):
+    # Beispiel DataFrame (ersetze dies mit deinem tatsächlichen DataFrame)
+
+    
+
+
+        
+        
+
+
+
+#################################################################################################
+
+def read_activity_csv_polar(path):
     df = pd.read_csv(path, sep=",", skiprows=2)
     return df
 
@@ -203,10 +189,24 @@ def plot_powercurve_polar(df, fs=1):
     return fig_curve_sprinter, fig_curve_normal
 
 if __name__ == "__main__":
-    df = read_activity_csv_polar()
+
+
+    """#df = read_activity_csv_polar("data/polar_data/Dominic_Vogt_2024-04-17_14-23-52_data.CSV")
+    df = read_activity_csv_polar("data/polar_data/test.CSV")
     print(df.head())
     best_effort = find_best_effort(df, 1)
     print(best_effort)
     fig1, fig2 = plot_powercurve_polar(df, 1)
     fig1.show()
-    fig2.show()
+    fig2.show()"""
+
+    df = pd.DataFrame("data/polar_data/Dominic_Vogt_2024-04-17_14-23-52_summary.csv")
+
+    # Funktion aufrufen und Ergebnisse erhalten
+    total_duration, total_distance, average_hr, total_calories = PolarData.calculate_summary_stats(df)
+
+    # Ausgabe der Ergebnisse
+    print(f"Gesamtzeit: {total_duration}")
+    print(f"Gesamtdistanz: {total_distance} km")
+    print(f"Durchschnittlicher Puls: {average_hr} bpm")
+    print(f"Verbrannte Kalorien: {total_calories}")

@@ -4,7 +4,8 @@ import streamlit_functions as sf
 from seite1 import seite1
 from seite2 import seite2
 from seite3 import seite3
-from seite4 import seite4   
+from seite4 import seite4
+from seite5 import seite5   
 
 # Anwenden des benutzerdefinierten CSS
 sf.set_bg_hack()
@@ -36,5 +37,5 @@ elif st.session_state.selected == "EKG-Analyse":
     seite2()
 elif st.session_state.selected == "Benutzerdaten bearbeiten":
     seite3()
-elif st.session_state.selected == "Polar Sportanalyse":
+elif st.session_state.selected == "Polar-Analyse":
     seite4()
