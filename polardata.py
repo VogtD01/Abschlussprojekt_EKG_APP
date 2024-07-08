@@ -4,6 +4,13 @@ import numpy as np
 import json
 import os
 import streamlit_functions as sf
+import plotly.graph_objects as go
+import plotly.subplots as sp
+from plotly.subplots import make_subplots
+
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 
 ##############################
@@ -130,6 +137,7 @@ class PolarData:
         with open("data/person_db.json", "w") as file:
             json.dump(person_data, file, indent=4)
 
+    
     def calculate_summary_stats(self):
         # Gesamtzeit berechnen
         total_duration = pd.to_timedelta(self.df_summary['Duration']).sum()
@@ -143,13 +151,187 @@ class PolarData:
         # Verbrannte Kalorien berechnen
         total_calories = self.df_summary['Calories'].sum()
 
-        return total_duration, total_distance, average_hr, total_calories
+        # Gesamtzeit in Minuten und Sekunden extrahieren
+        total_minutes = int(total_duration.total_seconds() // 60)
+        total_seconds = int(total_duration.total_seconds() % 60)
 
+        # Gesamtzeit formatieren
+        formatted_duration = "{}:{:02d}:{:02d}".format(total_minutes // 60, total_minutes % 60, total_seconds)
 
+        return formatted_duration, total_distance, average_hr, total_calories
+    
+    """def plot_heart_rate_over_time(df):
+        # Daten filtern und auf das Wesentliche reduzieren
+        df = df[["Time", "HR (bpm)"]]
 
+        # Zeit in Sekunden konvertieren
+        df['Time'] = pd.to_numeric(df['Time'].str[:-3].str.replace(':', ''))
+
+        # Streudiagramm mit Streamlit anzeigen
+        st.line_chart(x='Time', y='HR (bpm)', data=df)
+
+        # Alternativ können Sie auch Matplotlib verwenden
+        # fig, ax = plt.subplots()
+        # ax.plot(df['Time'], df['HR (bpm)'])
+        # ax.set_xlabel('Zeit (in Sekunden)')
+        # ax.set_ylabel('Herzfrequenz (in bpm)')
+        # st.pyplot(fig)"""
+
+    """def plot_heart_rate_over_time(self, df):
+        # Daten filtern und auf das Wesentliche reduzieren
+        df = df[["Time", "HR (bpm)"]]
+
+        # Zeit in Sekunden konvertieren
+        df['Time'] = pd.to_numeric(df['Time'].astype(str).str[:-3].str.replace(':', ''))
+
+        # Streudiagramm mit Plotly anzeigen
+        fig = px.line(df, x='Time', y='HR (bpm)', title='Herzfrequenz über Zeit')
+
+        # Formatierung
+        fig.update_layout(
+            title="Herzfrequenz über Zeit",
+            xaxis_title="Zeit (in Sekunden)",
+            yaxis_title="Herzfrequenz (in bpm)"
+        )
+
+        return fig"""
+    
+    @staticmethod
+    def create_heartrate_curve(df, fs=1):
+        time = np.arange(len(df)) / fs
+        heartrate = df["HR (bpm)"]
         
+        return pd.DataFrame({"Time": time / 60, "Heart Rate": heartrate})
+    
+    @staticmethod
+    def create_altitude_curve(df, fs=1):
+        time = np.arange(len(df)) / fs
+        altitude = df["Altitude (m)"]
         
+        return pd.DataFrame({"Time": time / 60, "Altitude": altitude})
+    
+    @staticmethod
+    def create_speed_curve(df, fs=1):
+        time = np.arange(len(df)) / fs
+        speed = df["Speed (km/h)"]
+        
+        return pd.DataFrame({"Time": time / 60, "Speed": speed})
+    
+    @staticmethod
+    def create_power_curve_overtime(df, fs=1):
+        time = np.arange(len(df)) / fs
+        power = df["Power (W)"]
+        
+        return pd.DataFrame({"Time": time / 60, "Power": power})
+    
 
+    def plot_polar_curves(df, fs=1):
+        df_heartrate = PolarData.create_heartrate_curve(df, fs)
+        df_altitude = PolarData.create_altitude_curve(df, fs)
+        df_speed = PolarData.create_speed_curve(df, fs)
+        df_power = PolarData.create_power_curve_overtime(df, fs)
+
+        fig_heartrate = px.line(df_heartrate, x='Time', y='Heart Rate', title='Herzfrequenz über Zeit')
+        fig_heartrate.update_layout(
+            title="Herzfrequenz über Zeit",
+            xaxis_title="Zeit (in Minuten)",
+            yaxis_title="Herzfrequenz (in bpm)"
+        )
+
+        fig_altitude = px.line(df_altitude, x='Time', y='Altitude', title='Höhe über Zeit')
+        fig_altitude.update_layout(
+            title="Höhe über Zeit",
+            xaxis_title="Zeit (in Minuten)",
+            yaxis_title="Höhe (in Metern)"
+        )
+
+        fig_speed = px.line(df_speed, x='Time', y='Speed', title='Geschwindigkeit über Zeit')
+        fig_speed.update_layout(
+            title="Geschwindigkeit über Zeit",
+            xaxis_title="Zeit (in Minuten)",
+            yaxis_title="Geschwindigkeit (in km/h)"
+        )
+
+        fig_power = px.line(df_power, x='Time', y='Power', title='Leistung über Zeit')
+        fig_power.update_layout(
+            title="Leistung über Zeit",
+            xaxis_title="Zeit (in Minuten)",
+            yaxis_title="Leistung (in Watt)"
+        )
+
+        return fig_heartrate, fig_altitude, fig_speed, fig_power
+
+
+    
+    @staticmethod
+    def plot_polar_curves_together(df, fs=1):
+        df_heartrate = PolarData.create_heartrate_curve(df, fs)
+        df_speed = PolarData.create_speed_curve(df, fs)
+        df_altitude = PolarData.create_altitude_curve(df, fs)
+        df_power = PolarData.create_power_curve_overtime(df, fs)
+
+        fig = make_subplots(
+            rows=4, cols=1, 
+            shared_xaxes=True, 
+            vertical_spacing=0.1,
+            subplot_titles=(
+                "Herzfrequenz über Zeit",
+                "Geschwindigkeit über Zeit",
+                "Leistung über Zeit",
+                "Höhe über Zeit"
+            )
+        )
+
+        fig.add_trace(
+            go.Scatter(x=df_heartrate['Time'], y=df_heartrate['Heart Rate'], name="Herzfrequenz", line=dict(color='red'), 
+                    hoverinfo='x+y', mode='lines'),
+            row=1, col=1
+        )
+        
+        fig.add_trace(
+            go.Scatter(x=df_speed['Time'], y=df_speed['Speed'], name="Geschwindigkeit", line=dict(color='blue'),
+                    hoverinfo='x+y', mode='lines'),
+            row=2, col=1
+        )
+        
+        fig.add_trace(
+            go.Scatter(x=df_power['Time'], y=df_power['Power'], name="Leistung", line=dict(color='green'),
+                    hoverinfo='x+y', mode='lines'),
+            row=3, col=1
+        )
+        
+        fig.add_trace(
+            go.Scatter(x=df_altitude['Time'], y=df_altitude['Altitude'], name="Höhe", line=dict(color='orange'),
+                    hoverinfo='x+y', mode='lines'),
+            row=4, col=1
+        )
+
+        fig.update_layout(
+            height=900, 
+            title_text="",
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=-0.3,
+                xanchor="right",
+                x=1
+            ),
+            hovermode='x'
+        )
+
+        fig.update_xaxes(title_text="Zeit (in Minuten)", row=4, col=1)
+        fig.update_yaxes(title_text="Herzfrequenz (in bpm)", row=1, col=1)
+        fig.update_yaxes(title_text="Geschwindigkeit (in km/h)", row=2, col=1)
+        fig.update_yaxes(title_text="Leistung (in Watt)", row=3, col=1)
+        fig.update_yaxes(title_text="Höhe (in Metern)", row=4, col=1)
+
+        return fig
+    
+    
+
+############################################
+   
 
 
 #################################################################################################
@@ -218,13 +400,4 @@ if __name__ == "__main__":
     fig1.show()
     fig2.show()"""
 
-    df = pd.DataFrame("data/polar_data/Dominic_Vogt_2024-04-17_14-23-52_summary.csv")
-
-    # Funktion aufrufen und Ergebnisse erhalten
-    total_duration, total_distance, average_hr, total_calories = PolarData.calculate_summary_stats(df)
-
-    # Ausgabe der Ergebnisse
-    print(f"Gesamtzeit: {total_duration}")
-    print(f"Gesamtdistanz: {total_distance} km")
-    print(f"Durchschnittlicher Puls: {average_hr} bpm")
-    print(f"Verbrannte Kalorien: {total_calories}")
+  
