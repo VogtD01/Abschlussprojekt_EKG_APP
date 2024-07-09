@@ -181,7 +181,7 @@ class PolarData:
     
     def calculate_summary_stats(self):
         #name des Benuzters
-        name = self.df_summary['Name'][0]
+        #name = self.df_summary['Name'][0]
 
         #Sportart
         sport = self.df_summary['Sport'][0]
