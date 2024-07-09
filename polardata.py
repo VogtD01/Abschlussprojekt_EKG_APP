@@ -350,15 +350,15 @@ class PolarData:
 #################################################################################
     #Nachfolgend die Fuktionen zum darstellen der Powercurve
 
-    def find_best_effort(df, t_interval, fs=1):
+    def find_best_effort(rolling_mean, t_interval, fs=1):
         windowsize = t_interval * fs
-        meanpower = df["Power (W)"].rolling(window=windowsize).mean()
-        bestpower = meanpower.max()
+        bestpower = rolling_mean[windowsize - 1:].max()
         return bestpower
 
     def create_power_curve(df, fs=1):
         intervals = np.arange(len(df)) / fs
-        powercurve = [find_best_effort(df, int(i), fs) for i in intervals]
+        rolling_mean = df["Power (W)"].rolling(window=int(intervals[-1] * fs)).mean()
+        powercurve = [find_best_effort(rolling_mean, int(i), fs) for i in intervals]
         return pd.DataFrame({"Powercurve": powercurve, "Intervall": intervals / 60})
 
     def create_power_curve_easy(df, fs=1):
@@ -369,7 +369,8 @@ class PolarData:
         while intervals[-1] < max_interval:
             intervals.append(intervals[-1] * 2)
 
-        powercurve = [find_best_effort(df, int(i), fs) for i in intervals]
+        rolling_mean = df["Power (W)"].rolling(window=int(max(intervals) * fs)).mean()
+        powercurve = [find_best_effort(rolling_mean, int(i), fs) for i in intervals]
         return pd.DataFrame({"Powercurve": powercurve, "Intervall": intervals})
 
     def format_zeit(intervall):
@@ -385,19 +386,20 @@ class PolarData:
 
         fig_curve_sprinter = px.line(df_powercurve_easy, x='Formatierter Intervall', y='Powercurve', title='Powerkurve')
         fig_curve_sprinter.update_layout(
-            title="Powercurve Ansicht Logarithmisch",
+            title="Powerkurve Ansicht Logarithmisch",
             xaxis_title="Intervall (Minuten:Sekunden)",
             yaxis_title="Power in Watt"
         )
 
         fig_curve_normal = px.line(df_powercurve, x='Intervall', y='Powercurve', title='Lineare Skala auf der X-Achse')
         fig_curve_normal.update_layout(
-            title="Powercurve Normalansicht",
+            title="Powerkurve Normalansicht",
             xaxis_title="Intervall in Minuten",
             yaxis_title="Power in Watt"
         )
         return fig_curve_sprinter, fig_curve_normal
-
+    
+##########################################################
     
     @staticmethod
     def plot_polar_curves_together(df, fs=1):

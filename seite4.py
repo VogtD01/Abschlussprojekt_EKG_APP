@@ -19,9 +19,9 @@ def seite4():
     # Initialisiere Session State, Versuchperson, Bild, EKG-Test
     sf.initialize_session_state()
 
-    st.markdown("<h1 style='color: white;'>EKG APP</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color: white;'>Polar-Analyse</h1>", unsafe_allow_html=True)
 
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([1, 2])
 
     with col2:
         st.session_state.aktuelle_versuchsperson = st.selectbox(
@@ -40,6 +40,9 @@ def seite4():
                     options=polar_test_ids,
                     key="sbPolarTest"
                 )
+            else:
+                st.session_state.selected_polar_test = None
+                st.write("Keine Polar-Daten verfügbar.")
 
     with col1:
         if st.session_state.aktuelle_versuchsperson:
@@ -91,18 +94,24 @@ def seite4():
 
             fig2 = PolarData.plot_heart_rate_with_zones(current_df_data, 1, maxHR, zones_thresholds)
             st.plotly_chart(fig2)
+        else:
+            st.write("Keine Polar-Test-Daten verfügbar.")
 
     with tab3:
         if st.session_state.selected_polar_test:
             current_df_data = polar_data.df_data
             fig_heartrate, fig_altitude, fig_speed, fig_power, fig_curve_sprinter, fig_curve_normal = PolarData.plot_polar_curves(current_df_data)
             st.plotly_chart(fig_speed)
+        else:
+            st.write("Keine Polar-Test-Daten verfügbar.")
 
     with tab4:
         if st.session_state.selected_polar_test:
             current_df_data = polar_data.df_data
             fig_heartrate, fig_altitude, fig_speed, fig_power, fig_curve_sprinter, fig_curve_normal = PolarData.plot_polar_curves(current_df_data)
             st.plotly_chart(fig_altitude)
+        else:
+            st.write("Keine Polar-Test-Daten verfügbar.")
 
     with tab5:
         if st.session_state.selected_polar_test:
@@ -135,8 +144,8 @@ def seite4():
             st.plotly_chart(fig_power)
             st.plotly_chart(fig_curve_sprinter)
             st.plotly_chart(fig_curve_normal)
-
-        
+        else:
+            st.write("Keine Polar-Test-Daten verfügbar.")
 
     # Button zum Löschen des Polar-Tests
     if st.session_state.selected_polar_test:
@@ -144,5 +153,3 @@ def seite4():
             person_dict['polar_tests'] = [test for test in person_dict['polar_tests'] if test['date'] != st.session_state.selected_polar_test]
             read_person_data.update_person_data(person_dict)
             st.experimental_rerun()
-
-   

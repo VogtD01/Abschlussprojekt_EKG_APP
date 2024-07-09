@@ -18,7 +18,7 @@ def seite2():
     sf.initialize_session_state()
 
     # Schreibe die Überschrift
-    st.markdown("<h1 style='color: white;'>EKG APP</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color: white;'>EKG-Analyse</h1>", unsafe_allow_html=True)
 
     # Verwende columns, um die Elemente nebeneinander anzuzeigen
     col1, col2, col3 = st.columns([1, 1, 2])

@@ -5,7 +5,10 @@ from seite1 import seite1
 from seite2 import seite2
 from seite3 import seite3
 from seite4 import seite4
-from seite5 import seite5   
+from seite5 import seite5
+
+# Setze die Seite auf Vollbildmodus
+# st.set_page_config(layout="wide")
 
 # Anwenden des benutzerdefinierten CSS
 sf.set_bg_hack()
@@ -14,20 +17,17 @@ sf.set_bg_hack()
 if 'selected' not in st.session_state:
     st.session_state.selected = "Home"
 
-
 # Sidebar-Menü erstellen
 with st.sidebar:
     selected = option_menu(
         menu_title="Navigation",  # Erster Menü-Titel
-        options=["Home", "EKG-Analyse", "Benutzerdaten bearbeiten", "Polar-Analyse"],  # Menü-Optionen
-        icons=["house", "book", "gear", "gear"],  # Icons für die Menü-Optionen
+        options=["Home", "EKG-Analyse", "Benutzerdaten bearbeiten", "Polar-Analyse", "Impressum"],  # Menü-Optionen
+        icons=["house", "activity", "person", "bar-chart", "info-circle"],  # Icons für die Menü-Optionen
         menu_icon="cast",  # Icon für das Menü
         default_index=0,  # Standardmäßig ausgewählte Option
     )
     if selected != st.session_state.selected:
         st.session_state.selected = selected
-
-
 
 # Hauptinhalt der App
 # Logik zum Anzeigen der ausgewählten Seite
@@ -39,3 +39,5 @@ elif st.session_state.selected == "Benutzerdaten bearbeiten":
     seite3()
 elif st.session_state.selected == "Polar-Analyse":
     seite4()
+elif st.session_state.selected == "Impressum":
+    seite5()
