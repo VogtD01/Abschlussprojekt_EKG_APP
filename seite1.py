@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 
 # Lade das Bild
-image = Image.open('Bilder\dream_TradingCard.jpg')
+image = Image.open('Bilder/dream_TradingCard.jpg')
 
 
 
