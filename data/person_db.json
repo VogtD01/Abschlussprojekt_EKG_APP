@@ -28,15 +28,9 @@
         "polar_tests": [
             {
                 "id": 1,
-                "date": "19.01.2024",
+                "date": "111",
                 "summary_link": "data/polar_data\\Dominic_Vogt_2024-01-19_15-26-47_summary.csv",
                 "data_link": "data/polar_data\\Dominic_Vogt_2024-01-19_15-26-47_data.csv"
-            },
-            {
-                "id": 2,
-                "date": "15.03.2024",
-                "summary_link": "data/polar_data\\Dominic_Vogt_2024-03-15_10-19-53_summary.csv",
-                "data_link": "data/polar_data\\Dominic_Vogt_2024-03-15_10-19-53_data.csv"
             }
         ],
         "max_hr_individual": 180.0,
@@ -76,14 +70,7 @@
                 "result_link": "data/ekg_data/02_Ruhe.txt"
             }
         ],
-        "polar_tests": [
-            {
-                "id": 1,
-                "date": "24.04.2024",
-                "summary_link": "data/polar_data\\Dominic_Vogt_2024-04-24_14-29-32(1)_summary.csv",
-                "data_link": "data/polar_data\\Dominic_Vogt_2024-04-24_14-29-32(1)_data.csv"
-            }
-        ]
+        "polar_tests": []
     },
     {
         "id": 3,
@@ -200,13 +187,6 @@
                 1.0
             ]
         },
-        "polar_tests": [
-            {
-                "id": 1,
-                "date": "04.05.2024",
-                "summary_link": "data/polar_data\\Dominic_Vogt_2024-05-04_10-18-07_summary.csv",
-                "data_link": "data/polar_data\\Dominic_Vogt_2024-05-04_10-18-07_data.csv"
-            }
-        ]
+        "polar_tests": []
     }
 ]
