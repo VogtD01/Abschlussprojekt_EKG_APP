@@ -242,6 +242,18 @@ class PolarData:
             # Hier könnten zusätzliche Informationen oder Logs ausgegeben werden, um das Problem weiter zu diagnostizieren.
 
 
+    def get_summary_statistics(self):
+            if not self.df_summary.empty:
+                sport = self.df_summary['Sport'].values[0]
+                date = self.df_summary['Date'].values[0]
+                start_time = self.df_summary['Start Time'].values[0]
+                total_duration = self.df_summary['Total Duration'].values[0]
+                total_distance = self.df_summary['Total Distance'].values[0]
+                average_heart_rate = self.df_summary['Average Heart Rate'].values[0]
+                return sport, date, start_time, total_duration, total_distance, average_heart_rate
+            else:
+                return None  # Ensure not to return None
+
     ##################################################################################
     @staticmethod
     def get_df_data(self):

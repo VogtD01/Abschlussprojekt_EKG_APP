@@ -58,7 +58,7 @@ def seite4():
     if st.session_state.selected_polar_test:
         polardata_dict = next(test for test in person_dict['polar_tests'] if test['date'] == st.session_state.selected_polar_test)
         polar_data = PolarData(polardata_dict)
-        sport, date, start_time, total_duration, total_distance, average_hr, total_calories = polar_data.calculate_summary_stats()
+        sport, date, start_time, total_duration, total_distance, average_hr, total_calories = polar_data.get_summary_statistics()
 
         # Horizontale Anordnung der Statistikwerte in weißer Schrift
         st.markdown("<h3 style='color: white;'>Zusammenfassung der Testdaten:</h3>", unsafe_allow_html=True)
