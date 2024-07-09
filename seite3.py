@@ -303,21 +303,16 @@ def seite3():
 
         with col2:
             st.markdown("<h3 style='color: white; font-size: 18px;'>Polar-Test hochladen</h3>", unsafe_allow_html=True)
-            polar_test = st.file_uploader("", type=["CSV"])  # Leerer String für Platzhalter
+            polar_test = st.file_uploader("", type=["csv"])  # Leerer String für Platzhalter
             polar_datum = st.text_input("Datum des Polar-Tests", placeholder="z.B. 23.12.2021")
             
             if st.button("Polar-Test hinzufügen"):
                 if polar_test is not None:
-                    # Speichern der hochgeladenen Datei als temporäre Datei
-                    temp_polar_path = os.path.join('temp', polar_test.name)
-                    with open(temp_polar_path, "wb") as f:
-                        f.write(polar_test.getbuffer())
+                    # Direktes Speichern der hochgeladenen Datei ohne temporäre Datei
+                    polar_test_content = polar_test.read()
                     
                     # Aufruf der Funktion zum Speichern der Polar-Daten
-                    summary_path, data_path = sf.save_polar_data(temp_polar_path, polar_test.name)
-                    
-                    # Löschen der temporären Datei
-                    os.remove(temp_polar_path)
+                    summary_path, data_path = sf.save_polar_data(polar_test_content, polar_test.name)
                     
                     # Aktuelle Personendaten aktualisieren
                     person_dict = read_person_data.find_person_data_by_name(st.session_state.aktuelle_versuchsperson)
