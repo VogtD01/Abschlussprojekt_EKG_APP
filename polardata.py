@@ -180,6 +180,18 @@ class PolarData:
 
     
     def calculate_summary_stats(self):
+        #name des Benuzters
+        name = self.df_summary['Name'][0]
+
+        #Sportart
+        sport = self.df_summary['Sport'][0]
+
+        #Datum
+        date = self.df_summary['Date'][0]
+
+        #Startzeit
+        start_time = self.df_summary['Start time'][0]
+        
         # Gesamtzeit berechnen
         total_duration = pd.to_timedelta(self.df_summary['Duration']).sum()
 
@@ -199,7 +211,7 @@ class PolarData:
         # Gesamtzeit formatieren
         formatted_duration = "{}:{:02d}:{:02d}".format(total_minutes // 60, total_minutes % 60, total_seconds)
 
-        return formatted_duration, total_distance, average_hr, total_calories
+        return sport, date, start_time, formatted_duration, total_distance, average_hr, total_calories
     
     @staticmethod
     def get_df_data(self):
@@ -297,6 +309,7 @@ class PolarData:
 
 
 ##########################################
+    @staticmethod
     def plot_polar_curves(df, fs=1):
         df_heartrate = PolarData.create_heartrate_curve(df, fs)
         df_altitude = PolarData.create_altitude_curve(df, fs)
@@ -330,9 +343,60 @@ class PolarData:
             xaxis_title="Zeit (in Minuten)",
             yaxis_title="Leistung (in Watt)"
         )
+        fig_curve_sprinter, fig_curve_normal = plot_powercurve_polar(df, fs) #erstellen der Powercurve
 
-        return fig_heartrate, fig_altitude, fig_speed, fig_power
+        return fig_heartrate, fig_altitude, fig_speed, fig_power, fig_curve_sprinter, fig_curve_normal
     
+#################################################################################
+    #Nachfolgend die Fuktionen zum darstellen der Powercurve
+
+    def find_best_effort(df, t_interval, fs=1):
+        windowsize = t_interval * fs
+        meanpower = df["Power (W)"].rolling(window=windowsize).mean()
+        bestpower = meanpower.max()
+        return bestpower
+
+    def create_power_curve(df, fs=1):
+        intervals = np.arange(len(df)) / fs
+        powercurve = [find_best_effort(df, int(i), fs) for i in intervals]
+        return pd.DataFrame({"Powercurve": powercurve, "Intervall": intervals / 60})
+
+    def create_power_curve_easy(df, fs=1):
+        intervals = [1, 5, 10, 30, 60, 120, 180, 300, 600, 1200, 1800, 3600, 5400, 7200]
+        max_interval = len(df) / fs
+
+        intervals = [i for i in intervals if i < max_interval]
+        while intervals[-1] < max_interval:
+            intervals.append(intervals[-1] * 2)
+
+        powercurve = [find_best_effort(df, int(i), fs) for i in intervals]
+        return pd.DataFrame({"Powercurve": powercurve, "Intervall": intervals})
+
+    def format_zeit(intervall):
+        minuten = intervall // 60
+        sekunden = intervall % 60
+        return f"{minuten}:{sekunden:02d}"
+
+    def plot_powercurve_polar(df, fs=1):
+        df_powercurve_easy = create_power_curve_easy(df, fs)
+        df_powercurve = create_power_curve(df, fs)
+
+        df_powercurve_easy['Formatierter Intervall'] = df_powercurve_easy['Intervall'].apply(format_zeit)
+
+        fig_curve_sprinter = px.line(df_powercurve_easy, x='Formatierter Intervall', y='Powercurve', title='Powerkurve')
+        fig_curve_sprinter.update_layout(
+            title="Powercurve Ansicht Logarithmisch",
+            xaxis_title="Intervall (Minuten:Sekunden)",
+            yaxis_title="Power in Watt"
+        )
+
+        fig_curve_normal = px.line(df_powercurve, x='Intervall', y='Powercurve', title='Lineare Skala auf der X-Achse')
+        fig_curve_normal.update_layout(
+            title="Powercurve Normalansicht",
+            xaxis_title="Intervall in Minuten",
+            yaxis_title="Power in Watt"
+        )
+        return fig_curve_sprinter, fig_curve_normal
 
     
     @staticmethod
@@ -341,6 +405,7 @@ class PolarData:
         df_speed = PolarData.create_speed_curve(df, fs)
         df_altitude = PolarData.create_altitude_curve(df, fs)
         df_power = PolarData.create_power_curve_overtime(df, fs)
+        
 
         fig = make_subplots(
             rows=4, cols=1, 

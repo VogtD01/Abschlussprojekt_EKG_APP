@@ -55,15 +55,21 @@ def seite4():
     if st.session_state.selected_polar_test:
         polardata_dict = next(test for test in person_dict['polar_tests'] if test['date'] == st.session_state.selected_polar_test)
         polar_data = PolarData(polardata_dict)
-        total_duration, total_distance, average_hr, total_calories = polar_data.calculate_summary_stats()
+        sport, date, start_time, total_duration, total_distance, average_hr, total_calories = polar_data.calculate_summary_stats()
 
         # Horizontale Anordnung der Statistikwerte in weißer Schrift
         st.markdown("<h3 style='color: white;'>Zusammenfassung der Testdaten:</h3>", unsafe_allow_html=True)
+
+        st.markdown("<h5 style='color: white;'>Sportart: " + sport + "</h5>", unsafe_allow_html=True)
+        st.markdown("<h5 style='color: white;'>Datum: " + str(date) + ", Startzeit: " + str(start_time) + "</h5>", unsafe_allow_html=True)
+
+
         col1, col2, col3, col4 = st.columns(4)
         col1.metric(" ", total_duration, "Zeit")
         col2.metric(" ", f"{total_distance} km", "Distanz")
         col3.metric(" ", f"{average_hr} bpm", "Herzfrequenz")
         col4.metric(" ", f"{total_calories} kcal", "Kalorien")
+        
 
     # Tabs für Bilder und Plot
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["Gesamtübersicht", "Hertzfrequenz", "Geschwindigkeit", "Höhe", "Leistung"])
@@ -89,24 +95,52 @@ def seite4():
     with tab3:
         if st.session_state.selected_polar_test:
             current_df_data = polar_data.df_data
-            fig_heartrate, fig_altitude, fig_speed, fig_power = PolarData.plot_polar_curves(current_df_data)
+            fig_heartrate, fig_altitude, fig_speed, fig_power, fig_curve_sprinter, fig_curve_normal = PolarData.plot_polar_curves(current_df_data)
             st.plotly_chart(fig_speed)
 
     with tab4:
         if st.session_state.selected_polar_test:
             current_df_data = polar_data.df_data
-            fig_heartrate, fig_altitude, fig_speed, fig_power = PolarData.plot_polar_curves(current_df_data)
+            fig_heartrate, fig_altitude, fig_speed, fig_power, fig_curve_sprinter, fig_curve_normal = PolarData.plot_polar_curves(current_df_data)
             st.plotly_chart(fig_altitude)
 
     with tab5:
         if st.session_state.selected_polar_test:
+            if st.button("Powercurve-Informationen anzeigen"):
+                st.session_state.show_powercurve_info = not st.session_state.show_powercurve_info
+
+                if st.session_state.show_powercurve_info:
+                    st.write("""
+                        **Was ist eine Powercurve?**
+
+                        Die Powercurve (auch als Leistungs- oder Leistungsverlaufskurve bezeichnet) ist ein wichtiges Analysewerkzeug im Bereich des Leistungssports, insbesondere beim Radsport. Sie stellt eine Momentaufnahme der maximalen Leistung eines Sportlers für verschiedene Zeitdauern dar.
+
+                        **Warum ist die Powercurve wichtig?**
+
+                        - **Individuelle Leistungsbewertung**: Die Powercurve gibt Auskunft über die Leistungsfähigkeit eines Sportlers über die Zeit.
+                        - **Trainingsanpassung**: Sie hilft bei der Festlegung von Trainingszielen und der Ausrichtung des Trainings auf die individuellen Stärken und Schwächen eines Sportlers.
+                        - **Wettkampfstrategie**: Auf Basis der Powercurve können Sportler ihre Wettkampfstrategie optimieren, um ihre Stärken auszunutzen und Schwächen zu minimieren.
+                        - **Leistungsüberwachung**: Die Powercurve ist ein wichtiges Werkzeug zur Überwachung der Leistungsentwicklung eines Sportlers im Laufe der Zeit.
+
+                        **Anwendungen der Powercurve im Sport**
+
+                        - **Trainingssteuerung**: Sportler können ihr Training optimieren, indem sie die Powercurve zur Anpassung der Intensität und Erholung nutzen.
+                        - **Vermeidung von Übertraining**: Eine kontinuierliche Überwachung der Powercurve hilft, Übertraining zu erkennen und zu vermeiden.
+                        - **Leistungsvergleich**: Sportler können ihre Powercurve mit der von anderen Sportlern vergleichen, um ihre eigene Leistungsfähigkeit besser zu verstehen und Verbesserungen vorzunehmen.
+                        - **Anpassung der Lebensweise**: Durch eine ausgewogene Ernährung, ausreichend Schlaf und gesunde Lebensgewohnheiten kann die Powercurve und somit die sportliche Leistung verbessert werden.
+                    """)
+            
             current_df_data = polar_data.df_data
-            fig_heartrate, fig_altitude, fig_speed, fig_power = PolarData.plot_polar_curves(current_df_data)
+            fig_heartrate, fig_altitude, fig_speed, fig_power, fig_curve_sprinter, fig_curve_normal = PolarData.plot_polar_curves(current_df_data)
             st.plotly_chart(fig_power)
+            st.plotly_chart(fig_curve_sprinter)
+            st.plotly_chart(fig_curve_normal)
+
+        
 
     # Button zum Löschen des Polar-Tests
     if st.session_state.selected_polar_test:
-        if st.button("Löschen"):
+        if st.button("Löschen der Trainingseinheit"):
             person_dict['polar_tests'] = [test for test in person_dict['polar_tests'] if test['date'] != st.session_state.selected_polar_test]
             read_person_data.update_person_data(person_dict)
             st.experimental_rerun()
