@@ -25,7 +25,20 @@
         "Gender": "m\u00c3\u00a4nnlich",
         "height": 180.0,
         "weight": 80.0,
-        "polar_tests": [],
+        "polar_tests": [
+            {
+                "id": 1,
+                "date": "19.01.2024",
+                "summary_link": "data/polar_data\\Dominic_Vogt_2024-01-19_15-26-47_summary.csv",
+                "data_link": "data/polar_data\\Dominic_Vogt_2024-01-19_15-26-47_data.csv"
+            },
+            {
+                "id": 2,
+                "date": "15.03.2024",
+                "summary_link": "data/polar_data\\Dominic_Vogt_2024-03-15_10-19-53_summary.csv",
+                "data_link": "data/polar_data\\Dominic_Vogt_2024-03-15_10-19-53_data.csv"
+            }
+        ],
         "max_hr_individual": 180.0,
         "heart_rate_zones": {
             "zone_1": [
@@ -61,6 +74,14 @@
                 "id": 3,
                 "date": "10.2.2023",
                 "result_link": "data/ekg_data/02_Ruhe.txt"
+            }
+        ],
+        "polar_tests": [
+            {
+                "id": 1,
+                "date": "24.04.2024",
+                "summary_link": "data/polar_data\\Dominic_Vogt_2024-04-24_14-29-32(1)_summary.csv",
+                "data_link": "data/polar_data\\Dominic_Vogt_2024-04-24_14-29-32(1)_data.csv"
             }
         ]
     },
@@ -111,7 +132,20 @@
         "height": 188.0,
         "weight": 78.0,
         "Gender": "m\u00c3\u00a4nnlich",
-        "polar_tests": [],
+        "polar_tests": [
+            {
+                "id": 1,
+                "date": "16.09.2021",
+                "summary_link": "data/polar_data\\Dominic_Vogt_2021-09-16_09-34-58_summary.csv",
+                "data_link": "data/polar_data\\Dominic_Vogt_2021-09-16_09-34-58_data.csv"
+            },
+            {
+                "id": 2,
+                "date": "17.04.2024",
+                "summary_link": "data/polar_data\\Dominic_Vogt_2024-04-17_14-23-52_summary.csv",
+                "data_link": "data/polar_data\\Dominic_Vogt_2024-04-17_14-23-52_data.csv"
+            }
+        ],
         "max_hr_individual": 196.0,
         "heart_rate_zones": {
             "zone_1": [
