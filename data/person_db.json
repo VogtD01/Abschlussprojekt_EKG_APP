@@ -25,26 +25,7 @@
         "Gender": "m\u00c3\u00a4nnlich",
         "height": 180.0,
         "weight": 80.0,
-        "polar_tests": [
-            {
-                "id": 1,
-                "date": "04.05.2024",
-                "summary_link": "data/polar_data\\Dominic_Vogt_2024-05-04_10-18-07_summary.csv",
-                "data_link": "data/polar_data\\Dominic_Vogt_2024-05-04_10-18-07_data.csv"
-            },
-            {
-                "id": 2,
-                "date": "24.04.2024",
-                "summary_link": "data/polar_data\\Dominic_Vogt_2024-04-24_14-29-32_summary.csv",
-                "data_link": "data/polar_data\\Dominic_Vogt_2024-04-24_14-29-32_data.csv"
-            },
-            {
-                "id": 3,
-                "date": "17.04.2024",
-                "summary_link": "data/polar_data\\Dominic_Vogt_2024-04-17_14-23-52_summary.csv",
-                "data_link": "data/polar_data\\Dominic_Vogt_2024-04-17_14-23-52_data.csv"
-            }
-        ],
+        "polar_tests": [],
         "max_hr_individual": 180.0,
         "heart_rate_zones": {
             "zone_1": [

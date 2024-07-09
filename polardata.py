@@ -177,9 +177,10 @@ class PolarData:
         return None
 
 
-
+#####################################################################################
+#debbunging versuch
     
-    def calculate_summary_stats(self):
+    """def calculate_summary_stats(self):
         #name des Benuzters
         #name = self.df_summary['Name'][0]
 
@@ -212,7 +213,36 @@ class PolarData:
         formatted_duration = "{}:{:02d}:{:02d}".format(total_minutes // 60, total_minutes % 60, total_seconds)
 
         return sport, date, start_time, formatted_duration, total_distance, average_hr, total_calories
-    
+    """
+
+    def calculate_summary_stats(self):
+        print("Lade Zusammenfassungsstatistiken...")
+
+        # Sicherstellen, dass self.df_summary die erwarteten Spalten enthält
+        print("Spalten in df_summary:", self.df_summary.columns)
+
+        try:
+            # Hier beginnt die eigentliche Berechnung der Zusammenfassungsstatistiken
+            sport = self.df_summary['Sport'][0]
+            date = self.df_summary['Date'][0]
+            start_time = self.df_summary['Start time'][0]
+            total_duration = pd.to_timedelta(self.df_summary['Duration']).sum()
+            total_distance = self.df_summary['Total distance (km)'].sum()
+            average_hr = self.df_summary['Average heart rate (bpm)'].mean()
+            total_calories = self.df_summary['Calories'].sum()
+
+            total_minutes = int(total_duration.total_seconds() // 60)
+            total_seconds = int(total_duration.total_seconds() % 60)
+            formatted_duration = "{}:{:02d}:{:02d}".format(total_minutes // 60, total_minutes % 60, total_seconds)
+
+            return sport, date, start_time, formatted_duration, total_distance, average_hr, total_calories
+
+        except KeyError as e:
+            print(f"KeyError beim Zugriff auf DataFrame: {e}")
+            # Hier könnten zusätzliche Informationen oder Logs ausgegeben werden, um das Problem weiter zu diagnostizieren.
+
+
+    ##################################################################################
     @staticmethod
     def get_df_data(self):
         return self.df_data
