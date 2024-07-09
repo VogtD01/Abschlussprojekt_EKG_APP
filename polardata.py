@@ -386,14 +386,14 @@ class PolarData:
 
         fig_curve_sprinter = px.line(df_powercurve_easy, x='Formatierter Intervall', y='Powercurve', title='Powerkurve')
         fig_curve_sprinter.update_layout(
-            title="Powerkurve Ansicht Logarithmisch",
+            title="Powercurve Ansicht Logarithmisch",
             xaxis_title="Intervall (Minuten:Sekunden)",
             yaxis_title="Power in Watt"
         )
 
         fig_curve_normal = px.line(df_powercurve, x='Intervall', y='Powercurve', title='Lineare Skala auf der X-Achse')
         fig_curve_normal.update_layout(
-            title="Powerkurve Normalansicht",
+            title="Powercurve Normalansicht",
             xaxis_title="Intervall in Minuten",
             yaxis_title="Power in Watt"
         )

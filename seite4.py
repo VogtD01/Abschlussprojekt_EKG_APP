@@ -112,44 +112,46 @@ def seite4():
             st.plotly_chart(fig_altitude)
         else:
             st.write("Keine Polar-Test-Daten verfügbar.")
+    # Beispiel-Initialisierung von st.session_state
+    if 'show_powercurve_info' not in st.session_state:
+        st.session_state.show_powercurve_info = False  # Initialisieren Sie mit False oder dem gewünschten Anfangswert
 
     with tab5:
         if st.session_state.selected_polar_test:
-            if st.button("Powercurve-Informationen anzeigen"):
-                st.session_state.show_powercurve_info = not st.session_state.show_powercurve_info
-
-                if st.session_state.show_powercurve_info:
-                    st.write("""
-                        **Was ist eine Powercurve?**
-
-                        Die Powercurve (auch als Leistungs- oder Leistungsverlaufskurve bezeichnet) ist ein wichtiges Analysewerkzeug im Bereich des Leistungssports, insbesondere beim Radsport. Sie stellt eine Momentaufnahme der maximalen Leistung eines Sportlers für verschiedene Zeitdauern dar.
-
-                        **Warum ist die Powercurve wichtig?**
-
-                        - **Individuelle Leistungsbewertung**: Die Powercurve gibt Auskunft über die Leistungsfähigkeit eines Sportlers über die Zeit.
-                        - **Trainingsanpassung**: Sie hilft bei der Festlegung von Trainingszielen und der Ausrichtung des Trainings auf die individuellen Stärken und Schwächen eines Sportlers.
-                        - **Wettkampfstrategie**: Auf Basis der Powercurve können Sportler ihre Wettkampfstrategie optimieren, um ihre Stärken auszunutzen und Schwächen zu minimieren.
-                        - **Leistungsüberwachung**: Die Powercurve ist ein wichtiges Werkzeug zur Überwachung der Leistungsentwicklung eines Sportlers im Laufe der Zeit.
-
-                        **Anwendungen der Powercurve im Sport**
-
-                        - **Trainingssteuerung**: Sportler können ihr Training optimieren, indem sie die Powercurve zur Anpassung der Intensität und Erholung nutzen.
-                        - **Vermeidung von Übertraining**: Eine kontinuierliche Überwachung der Powercurve hilft, Übertraining zu erkennen und zu vermeiden.
-                        - **Leistungsvergleich**: Sportler können ihre Powercurve mit der von anderen Sportlern vergleichen, um ihre eigene Leistungsfähigkeit besser zu verstehen und Verbesserungen vorzunehmen.
-                        - **Anpassung der Lebensweise**: Durch eine ausgewogene Ernährung, ausreichend Schlaf und gesunde Lebensgewohnheiten kann die Powercurve und somit die sportliche Leistung verbessert werden.
-                    """)
             
-            current_df_data = polar_data.df_data
-            fig_heartrate, fig_altitude, fig_speed, fig_power, fig_curve_sprinter, fig_curve_normal = PolarData.plot_polar_curves(current_df_data)
-            st.plotly_chart(fig_power)
-            st.plotly_chart(fig_curve_sprinter)
-            st.plotly_chart(fig_curve_normal)
-        else:
-            st.write("Keine Polar-Test-Daten verfügbar.")
+            st.write("""
+                **Was ist eine Powercurve?**
 
-    # Button zum Löschen des Polar-Tests
-    if st.session_state.selected_polar_test:
-        if st.button("Löschen der Trainingseinheit"):
-            person_dict['polar_tests'] = [test for test in person_dict['polar_tests'] if test['date'] != st.session_state.selected_polar_test]
-            read_person_data.update_person_data(person_dict)
-            st.experimental_rerun()
+                Die Powercurve (auch als Leistungs- oder Leistungsverlaufskurve bezeichnet) ist ein wichtiges Analysewerkzeug im Bereich des Leistungssports, insbesondere beim Radsport. Sie stellt eine Momentaufnahme der maximalen Leistung eines Sportlers für verschiedene Zeitdauern dar.
+
+                **Warum ist die Powercurve wichtig?**
+
+                - **Individuelle Leistungsbewertung**: Die Powercurve gibt Auskunft über die Leistungsfähigkeit eines Sportlers über die Zeit.
+                - **Trainingsanpassung**: Sie hilft bei der Festlegung von Trainingszielen und der Ausrichtung des Trainings auf die individuellen Stärken und Schwächen eines Sportlers.
+                - **Wettkampfstrategie**: Auf Basis der Powercurve können Sportler ihre Wettkampfstrategie optimieren, um ihre Stärken auszunutzen und Schwächen zu minimieren.
+                - **Leistungsüberwachung**: Die Powercurve ist ein wichtiges Werkzeug zur Überwachung der Leistungsentwicklung eines Sportlers im Laufe der Zeit.
+
+                **Anwendungen der Powercurve im Sport**
+
+                - **Trainingssteuerung**: Sportler können ihr Training optimieren, indem sie die Powercurve zur Anpassung der Intensität und Erholung nutzen.
+                - **Vermeidung von Übertraining**: Eine kontinuierliche Überwachung der Powercurve hilft, Übertraining zu erkennen und zu vermeiden.
+                - **Leistungsvergleich**: Sportler können ihre Powercurve mit der von anderen Sportlern vergleichen, um ihre eigene Leistungsfähigkeit besser zu verstehen und Verbesserungen vorzunehmen.
+                - **Anpassung der Lebensweise**: Durch eine ausgewogene Ernährung, ausreichend Schlaf und gesunde Lebensgewohnheiten kann die Powercurve und somit die sportliche Leistung verbessert werden.
+            """)
+
+            # Annahme: polar_data.df_data ist ein DataFrame mit den Daten für die Plots
+            if st.session_state.selected_polar_test:
+                current_df_data = polar_data.df_data  # Beispiel für den aktuellen DataFrame
+                fig_heartrate, fig_altitude, fig_speed, fig_power, fig_curve_sprinter, fig_curve_normal = PolarData.plot_polar_curves(current_df_data)
+                st.plotly_chart(fig_power)
+                st.plotly_chart(fig_curve_sprinter)
+                st.plotly_chart(fig_curve_normal)
+            else:
+                st.write("Keine Polar-Test-Daten verfügbar.")
+
+        # Button zum Löschen des Polar-Tests
+        if st.session_state.selected_polar_test:
+            if st.button("Löschen der Trainingseinheit"):
+                person_dict['polar_tests'] = [test for test in person_dict['polar_tests'] if test['date'] != st.session_state.selected_polar_test]
+                read_person_data.update_person_data(person_dict)
+                st.experimental_rerun()
