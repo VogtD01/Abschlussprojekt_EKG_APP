@@ -154,5 +154,44 @@
                 1.0
             ]
         }
+    },
+    {
+        "id": 7,
+        "firstname": "Testperson",
+        "lastname": "Huber",
+        "date_of_birth": "1988",
+        "picture_path": null,
+        "ekg_tests": [],
+        "max_hr_individual": 182.0,
+        "heart_rate_zones": {
+            "zone_1": [
+                0.5,
+                0.6
+            ],
+            "zone_2": [
+                0.6,
+                0.7
+            ],
+            "zone_3": [
+                0.7,
+                0.7999999999999999
+            ],
+            "zone_4": [
+                0.7999999999999999,
+                0.9
+            ],
+            "zone_5": [
+                0.9,
+                1.0
+            ]
+        },
+        "polar_tests": [
+            {
+                "id": 1,
+                "date": "04.05.2024",
+                "summary_link": "data/polar_data\\Dominic_Vogt_2024-05-04_10-18-07_summary.csv",
+                "data_link": "data/polar_data\\Dominic_Vogt_2024-05-04_10-18-07_data.csv"
+            }
+        ]
     }
 ]
