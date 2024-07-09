@@ -45,6 +45,7 @@ fig2 = PolarData.plot_heart_rate_with_zones(df)
 
 fig1.show()
 fig2.show()
+#
 #fig3.show()
 
 person_id = 6  # Beispiel-Personen-ID
@@ -56,4 +57,5 @@ print(zones_thresholds)
 fig4 = PolarData.plot_heart_rate_with_zones(df, 1, maxHR, zones_thresholds)
 fig4.show()
 #plot_heart_rate_with_zones(df, fs=1, max_heart_rate=200, zone_thresholds=[0.5, 0.6, 0.7, 0.8, 0.9]):
+
 
