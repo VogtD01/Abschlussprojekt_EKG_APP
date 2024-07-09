@@ -66,7 +66,7 @@ def seite4():
         col4.metric(" ", f"{total_calories} kcal", "Kalorien")
 
     # Tabs für Bilder und Plot
-    tab1, tab2, tab3= st.tabs(["Gesamtübersicht", "Hertzfrequenz", "Bild 3"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Gesamtübersicht", "Hertzfrequenz", "Geschwindigkeit", "Höhe", "Leistung"])
 
     with tab1:
         if st.session_state.selected_polar_test:
@@ -89,7 +89,26 @@ def seite4():
     with tab3:
         if st.session_state.selected_polar_test:
             current_df_data = polar_data.df_data
-            #fig_heartrate, fig_altitude, fig_speed, fig_power = polar_data.plot_polar_curves(current_df_data)
-            #st.plotly_chart(fig_speed)
+            fig_heartrate, fig_altitude, fig_speed, fig_power = PolarData.plot_polar_curves(current_df_data)
+            st.plotly_chart(fig_speed)
+
+    with tab4:
+        if st.session_state.selected_polar_test:
+            current_df_data = polar_data.df_data
+            fig_heartrate, fig_altitude, fig_speed, fig_power = PolarData.plot_polar_curves(current_df_data)
+            st.plotly_chart(fig_altitude)
+
+    with tab5:
+        if st.session_state.selected_polar_test:
+            current_df_data = polar_data.df_data
+            fig_heartrate, fig_altitude, fig_speed, fig_power = PolarData.plot_polar_curves(current_df_data)
+            st.plotly_chart(fig_power)
+
+    # Button zum Löschen des Polar-Tests
+    if st.session_state.selected_polar_test:
+        if st.button("Löschen"):
+            person_dict['polar_tests'] = [test for test in person_dict['polar_tests'] if test['date'] != st.session_state.selected_polar_test]
+            read_person_data.update_person_data(person_dict)
+            st.experimental_rerun()
 
    
