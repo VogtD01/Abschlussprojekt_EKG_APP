@@ -204,70 +204,7 @@ def seite3():
             """)
 
     ###########################################################################
-    """with tab2:
-        #st.markdown("<h1 style='color: white; font-size: 24px;'>EKG/Polar-Daten hinzufügen</h1>", unsafe_allow_html=True)
-        st.markdown("<h1 style='color: white;'>EKG/Polar-Daten hinzufügen</h1>", unsafe_allow_html=True)
-        # Lade alle Personen
-        person_names = read_person_data.get_person_list(read_person_data.load_person_data())
-        
-        # Initialisiere Session State, Versuchperson, Bild, EKG-Test
-        sf.initialize_session_state()
-        
-        # Personenauswahl und Bild
-        col1, col2 = st.columns([1, 2])
-
-        with col2:
-            st.write("Versuchsperson auswählen")
-            st.session_state.aktuelle_versuchsperson = st.selectbox(
-                'Versuchsperson',
-                options=person_names, key="sbVersuchsperson2")
-            
-        with col1:
-            if st.session_state.aktuelle_versuchsperson:
-                # Finde den Pfad zur Bilddatei
-                person_dict = read_person_data.find_person_data_by_name(st.session_state.aktuelle_versuchsperson)
-                st.session_state.picture_path = person_dict.get("picture_path")
-                if st.session_state.picture_path:
-                    image = Image.open(st.session_state.picture_path)
-                    st.image(image, caption=st.session_state.aktuelle_versuchsperson)
-                else:
-                    st.write("Kein Bild verfügbar")
-        
-        # Zwei Spalten für Upload-Felder
-        col1, col2 = st.columns([1, 1])
-
-        with col2:
-            st.markdown("<h3 style='color: white; font-size: 18px;'>Polar-Test hochladen</h3>", unsafe_allow_html=True)
-            polar_test = st.file_uploader("", type=["CSV"])  # Leerer String für Platzhalter
-            polar_datum = st.text_input("Datum des Polar-Tests", placeholder="z.B. 23.12.2021")
-            
-            if st.button("Polar-Test hinzufügen"):
-                path = sf.save_polar_data(polar_test, polar_test.name)
-                
-                # Aktuelle Personendaten aktualisieren
-                person_dict = read_person_data.find_person_data_by_name(st.session_state.aktuelle_versuchsperson)
-                
-                if 'polar_tests' in person_dict:
-                    # IDs der vorhandenen Polar-Tests sammeln
-                    existing_polar_ids = [test['id'] for test in person_dict['polar_tests']]
-                    next_polar_id = max(existing_polar_ids, default=0) + 1
-                else:
-                    next_polar_id = 1
-                
-                new_polartest = {
-                    "id": next_polar_id,
-                    "date": polar_datum,
-                    "result_link": path
-                }
-
-                if 'polar_tests' not in person_dict:
-                    person_dict['polar_tests'] = []
-
-                person_dict['polar_tests'].append(new_polartest)
-                read_person_data.update_person_data(person_dict)
-
-                st.write("Polar-Test wurde hinzugefügt")"""
-
+    
 
     with tab2:
         st.markdown("<h1 style='color: white;'>EKG/Polar-Daten hinzufügen</h1>", unsafe_allow_html=True)
